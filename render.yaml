@@ -19,9 +19,9 @@ services:
         - key: DEBUG
           value: "False"
         - key: ALLOWED_HOSTS
-          value: "https://buildkit-ywck.onrender.com,localhost,127.0.0.1" # Replace with your Render domain
+          value: "https://buildkit-ywck.onrender.com"
         - key: SECRET_KEY
-          value: "your-django-secret-key" # Replace with a secure key
+          value: "change-this-to-a-random-secret-key"
         - key: CLOUDINARY_CLOUD_NAME
           sync: false # Set in Render dashboard
         - key: CLOUDINARY_API_KEY
