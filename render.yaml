@@ -2,16 +2,45 @@ services:
   - type: web
     name: buildkit
     env: python
-    pythonVersion: "3.11" # Using 3.11 for better compatibility with Pillow
-    poetryVersion: "2.1.3" # Matching the Poetry version from the logs
+    pythonVersion: "3.11" # Stable version for compatibility
+    poetryVersion: "2.1.3"
     plan: free
     buildCommand: |
       apt-get update && apt-get install -y libjpeg-dev zlib1g-dev libpng-dev
       pip install --upgrade pip
       pip install -r requirements.txt
-    startCommand: python manage.py runserver 0.0.0.0:8000
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn --bind 0.0.0.0:8000 buildkit.wsgi:application
     envVars:
       - key: PYTHONUNBUFFERED
         value: "1"
       - key: DJANGO_SETTINGS_MODULE
-        value: "buildkit.settings" # Adjust if your settings module is different
+        value: "buildkit.settings"
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "localhost,127.0.0.1,yourapp.onrender.com" # Replace with your Render domain
+      - key: SECRET_KEY
+        value: "your-django-secret-key" # Replace with a secure key
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false # Set in Render dashboard
+      - key: CLOUDINARY_API_KEY
+        sync: false # Set in Render dashboard
+      - key: CLOUDINARY_API_SECRET
+        sync: false # Set in Render dashboard
+      - key: DATABASE_URL
+        sync: false # Set by Render for PostgreSQL
+      - key: EMAIL_HOST_USER
+        sync: false # Set in Render dashboard
+      - key: EMAIL_HOST_PASSWORD
+        sync: false # Set in Render dashboard
+      - key: FIREBASE_WEB_API_KEY
+        sync: false # Set in Render dashboard
+      - key: FIREBASE_AUTH_DOMAIN
+        sync: false # Set in Render dashboard
+      - key: FIREBASE_PROJECT_ID
+        sync: false # Set in Render dashboard
+      - key: FIREBASE_APP_ID
+        sync: false # Set in Render dashboard
+      - key: WHATSAPP_ADMIN_NUMBER
+        sync: false # Set in Render dashboard
