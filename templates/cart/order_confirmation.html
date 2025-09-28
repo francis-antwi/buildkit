@@ -1,0 +1,258 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build Kit - Your trusted supplier of high-quality building and construction materials. Cement, tools, electrical, plumbing supplies and more.">
+    <meta name="keywords" content="building materials, construction supplies, cement, steel, tools, electrical, plumbing">
+    <meta name="author" content="Build Kit">
+    <meta property="og:title" content="Build Kit - Home of Quality Building Materials">
+    <meta property="og:description" content="Your trusted supplier of high-quality building and construction materials.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://buildkit.shop">
+    <meta property="og:image" content="img/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#ffb600">
+    <link rel="canonical" href="https://buildkit.shop">
+    <link rel="shortcut icon" href="{% static 'img/logo.png'%}">
+    <title>BuildKit Construction - Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(to right, #25d366, #128c7e);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            display: block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .success-icon {
+            color: #25d366;
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+        
+        .content h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .content p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .redirect-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .redirect-info i {
+            color: #25d366;
+            font-size: 24px;
+        }
+        
+        .redirect-info span {
+            color: #555;
+            font-size: 16px;
+        }
+        
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(to right, #25d366, #128c7e);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+            margin-top: 10px;
+        }
+        
+        .whatsapp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.6);
+        }
+        
+        .whatsapp-btn:active {
+            transform: translateY(0);
+        }
+        
+        .whatsapp-btn i {
+            font-size: 24px;
+        }
+        
+        .countdown {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #777;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 26px;
+            }
+            
+            .content h2 {
+                font-size: 24px;
+            }
+            
+            .content p {
+                font-size: 16px;
+            }
+            
+            .whatsapp-btn {
+                padding: 14px 28px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i class="fab fa-whatsapp"></i>
+            <h1>Order Placed Successfully!</h1>
+            <p>Thank you for your purchase</p>
+        </div>
+        
+        <div class="content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h2>Your Order is Confirmed</h2>
+            <p>We're preparing your items for shipment. You will receive a confirmation email shortly.</p>
+            
+            <div class="redirect-info">
+                <i class="fas fa-info-circle"></i>
+                <span>Redirecting to WhatsApp to complete your order...</span>
+            </div>
+            
+            <a href="{{ whatsapp_url }}" class="whatsapp-btn" id="whatsapp-link">
+                <i class="fab fa-whatsapp"></i>
+                Open WhatsApp to Confirm Order
+            </a>
+            
+            <div class="countdown" id="countdown">
+                Redirecting in <span id="timer">2</span> seconds...
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Need help? Contact our support team at support@example.com</p>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        let timeLeft = 2;
+        const timerElement = document.getElementById('timer');
+        
+        const countdown = setInterval(function() {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                // Auto-redirect
+                window.location.href = "{{ whatsapp_url }}";
+            }
+        }, 1000);
+        
+        // Optional: Add a click event to stop the countdown if user clicks manually
+        document.getElementById('whatsapp-link').addEventListener('click', function() {
+            clearInterval(countdown);
+        });
+    </script>
+</body>
+</html>

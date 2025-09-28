@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Arial', sans-serif;
+        font-weight: 600;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+        margin-bottom: 50px;
+    }
+    
+    /* Page Title */
+    .page-title-wrap {
+        background-image: url(https://img.freepik.com/premium-vector/concept-banner-with-realistic-shopping-cart-yellow-background-vector-illustration_548887-101.jpg);
+        padding: 100px 0 60px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+    
+    .page-title-wrap h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: white;
+    }
+    
+    .breadcrumbs {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: inline-flex;
+        gap: 10px;
+    }
+    
+    .breadcrumbs li {
+        color: #bdc3c7;
+    }
+    
+    .breadcrumbs a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    
+    
+    .shop_table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+    }
+    
+    .shop_table th,
+    .shop_table td {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        vertical-align: middle;
+    }
+    
+    .shop_table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .product-name {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .product-name img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+    
+    .quantity {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        overflow: hidden;
+        width: 120px;
+    }
+    
+    .quantity button {
+        border: none;
+        background: #f8f9fa;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .quantity button:hover {
+        background: #ff6b35;
+        color: white;
+    }
+    
+    .quantity input {
+        border: none;
+        text-align: center;
+        width: 60px;
+        padding: 8px;
+    }
+    
+    .cart-remove {
+        color: #e74c3c;
+        font-size: 16px;
+        text-decoration: none;
+    }
+    
+    .cart-remove:hover {
+        color: #c0392b;
+    }
+    
+    .actions {
+        background: #f8f9fa;
+    }
+    
+    .button {
+        background: #ff6b35;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 3px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .button:hover {
+        background: #e55a2b;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .checkout-button {
+        background: #27ae60;
+        float: right;
+    }
+    
+    .checkout-button:hover {
+        background: #229954;
+    }
+    
+    /* Cart Totals */
+    .cart-collaterals-wrap {
+        background: #f8f9fa;
+        padding: 40px 0;
+    }
+    
+    .cart-collaterals {
+        display: flex;
+        gap: 40px;
+    }
+    
+    .cart_totals {
+        flex: 1;
+    }
+    
+    
+    .cart_totals h2 {
+        color: #2c3e50;
+        margin-bottom: 30px;
+    }
+    
+    .cart_totals table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .cart_totals td,
+    .cart_totals th {
+        padding: 15px 20px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .cart_totals th {
+        background: white;
+        font-weight: 600;
+    }
+    
+    .order-total {
+        background: #2c3e50;
+        color: white;
+    }
+    
+    .order-total th,
+    .order-total td {
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+    }
+    
+    /* Shipping Calculator */
+    .woocommerce-shipping-calculator h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+    
+    .shipping-calculator-form .form-row {
+        margin-bottom: 20px;
+    }
+    
+    .shipping-calculator-form input,
+    .shipping-calculator-form select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .cart-collaterals {
+            flex-direction: column;
+        }
+        
+        .actions {
+            text-align: center;
+        }
+        
+        .checkout-button {
+            float: none;
+            margin-top: 10px;
+        }
+        
+        .shop_table {
+            font-size: 12px;
+        }
+        
+        .shop_table th,
+        .shop_table td {
+            padding: 10px 5px;
+        }
+    }
+</style>
+<section class="page-title-wrap">
+        <div class="container">
+            <div class="page-title-inner">
+                <h1>Checkout</h1>
+                <ul class="breadcrumbs">
+                    <li><a href="{% url 'store:index' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
+                    <li><span>Checkout</span></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <main class="site-content-page">
+        <div class="container">
+            <h2>Order Summary</h2>
+            {% if cart|length > 0 %}
+                <table class="shop_table cart">
+                    <thead>
+                        <tr>
+                            <th class="product-name">Product</th>
+                            <th class="product-price">Price</th>
+                            <th class="product-quantity">Quantity</th>
+                            <th class="product-subtotal">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                            <tr class="cart_item">
+                                <td class="product-name">
+                                    <div class="product-name">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80" height="80">
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/80x80/cccccc/666666?text={{ item.product.name|urlencode }}" alt="{{ item.product.name }}">
+                                        {% endif %}
+                                        <div class="product-name-wrap">
+                                            <div class="product-name-inner">
+                                                <a href="{% url 'store:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="product-price">
+                                    <span class="price">GHS {{ item.price|floatformat:2 }}</span>
+                                </td>
+                                <td class="product-quantity">
+                                    <span>{{ item.quantity }}</span>
+                                </td>
+                                <td class="product-subtotal">
+                                    <span class="price">GHS {{ item.total_price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="cart_totals">
+                    <h2>Cart Totals</h2>
+                    <table>
+                        <tr class="cart-subtotal">
+                            <th>Subtotal</th>
+                            <td><span class="price">GHS {{ cart.get_total_price|floatformat:2 }}</span></td>
+                        </tr>
+                        <tr class="delivery">
+                            <th>Delivery</th>
+                            <td>
+                                <span class="price">GHS {{ delivery_cost|floatformat:2 }}</span>
+                                <p>Delivery to <strong>{{ region|default:"Select a region" }}, Ghana</strong>.</p>
+                            </td>
+                        </tr>
+                        <tr class="order-total">
+                            <th>Total</th>
+                            <td><strong><span class="price">GHS {{ cart.get_total_price|add:delivery_cost|floatformat:2 }}</span></strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h2>Customer Details</h2>
+                <p>Name: {{ first_name|default:"Not specified" }} {{ last_name|default:"" }}</p>
+                <p>Email: {{ email|default:"Not specified" }}</p>
+                <p>Phone: {{ phone_number|default:"Not specified" }}</p>
+
+                <h2>Delivery Details</h2>
+                <p>Delivery to: {{ region|default:"Not specified" }}, {{ address|default:"Not specified" }}, {{ city|default:"Not specified" }}, {{ postal_code|default:"Not specified" }}, Ghana</p>
+                <p>Delivery Method: {{ delivery_method|title }}</p>
+
+                <h2>Proceed with Order</h2>
+          {% if first_name and email and address and city and region %}
+    {% if user.is_authenticated or phone_number %}
+        <p>Click below to send your order as an invoice to the admin via WhatsApp.</p>
+        <a href="{% url 'cart:checkout_whatsapp' %}" class="button checkout-button">
+            Send Order to Admin via WhatsApp
+        </a>
+    {% else %}
+        <p>Please provide your phone number before proceeding.</p>
+        <a href="{% url 'cart:cart_detail' %}" class="button">Update Details</a>
+    {% endif %}
+{% else %}
+    <p>Please provide all required customer and delivery details in the cart before proceeding.</p>
+    <a href="{% url 'cart:cart_detail' %}" class="button">Update Details</a>
+{% endif %}
+
+                <a href="{% url 'cart:cart_detail' %}" class="button">Back to Cart</a>
+            {% else %}
+                <p>Your cart is empty.</p>
+                <a href="{% url 'store:product_list' %}" class="button">Browse Products</a>
+            {% endif %}
+        </div>
+    </main>
+
+{% endblock %}

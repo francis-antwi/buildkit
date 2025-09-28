@@ -1,0 +1,944 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static cart_tags %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Oswald:400,700" rel="stylesheet">
+
+<style>
+    /* Reset and Base Styles */
+    :root {
+        --primary-color: #ffb600;
+        --primary-dark: #e0a800;
+        --secondary-color: #333;
+        --text-color: #666;
+        --white: #ffffff;
+        --gray-light: #f1f1f1;
+        --shadow: 0 2px 15px rgba(0,0,0,0.1);
+        --shadow-hover: 0 10px 20px rgba(0,0,0,0.1);
+        --border-radius: 5px;
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--secondary-color);
+        background-color: var(--white);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Oswald', sans-serif;
+        margin-bottom: 15px;
+    }
+
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 22px; }
+    h4 { font-size: 18px; }
+    h5 { font-size: 16px; }
+    h6 { font-size: 12px; }
+
+    a {
+        color: var(--secondary-color);
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: var(--primary-color);
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    /* Page Title Section */
+    .page-title-wrap {
+        background-image: url('https://themes.g5plus.net/darna/wp-content/themes/darna/assets/images/bg-shop-title.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 80px 0;
+        text-align: center;
+        color: var(--white);
+        position: relative;
+    }
+
+    .page-title-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .page-title-inner {
+        position: relative;
+        z-index: 1;
+    }
+
+    .breadcrumbs {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .breadcrumbs li {
+        margin: 0 5px;
+    }
+
+    .breadcrumbs a {
+        color: var(--white);
+    }
+
+    /* Product Page Styles */
+    .single-product-wrap {
+        padding: 50px 0;
+    }
+
+    .single-product-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .single-product-info {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 50px;
+    }
+
+    .single-product-image-wrap {
+        flex: 1;
+        min-width: 300px;
+        padding: 0 15px;
+    }
+
+    .single-product-image img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #eee;
+        border-radius: var(--border-radius);
+    }
+
+    .summary-product-wrap {
+        flex: 1;
+        min-width: 300px;
+        padding: 0 15px;
+    }
+
+    .product_title {
+        color: var(--secondary-color);
+        margin-bottom: 10px;
+    }
+
+    .woocommerce-product-rating {
+        margin-bottom: 15px;
+    }
+
+    .star-rating {
+        color: var(--primary-color);
+        display: inline-block;
+    }
+
+    .price {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    .product-single-short-description {
+        margin-bottom: 20px;
+        line-height: 1.8;
+        color: var(--text-color);
+    }
+
+    .cart {
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .quantity {
+        margin-bottom: 0;
+    }
+
+    .quantity-inner {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+    }
+
+    .btn-number {
+        background: var(--gray-light);
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .btn-number:hover {
+        background: #ddd;
+    }
+
+    .btn-number:disabled {
+        background: #e0e0e0;
+        cursor: not-allowed;
+    }
+
+    .qty, .input-text.qty {
+        width: 50px;
+        text-align: center;
+        border: none;
+        padding: 5px;
+        margin: 0 5px;
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+    }
+
+    .single_add_to_cart_button, .add-to-cart {
+        background-color: var(--primary-color);
+        color: var(--white);
+        border: none;
+        padding: 8px 15px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        transition: var(--transition);
+        width: 100%;
+        max-width: 200px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .single_add_to_cart_button:hover, .add-to-cart:hover {
+        background-color: var(--primary-dark);
+    }
+
+    .single_add_to_cart_button:disabled, .add-to-cart:disabled {
+        background: #e0e0e0;
+        cursor: not-allowed;
+    }
+
+    .cart-quantity {
+        font-size: 14px;
+        color: var(--text-color);
+        margin-left: 10px;
+    }
+
+    .product_meta {
+        margin-top: 20px;
+        font-size: 14px;
+        color: var(--text-color);
+    }
+
+    .product_meta span {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    /* Tabs Section */
+    .woocommerce-tabs {
+        margin-bottom: 50px;
+    }
+
+    .wc-tabs {
+        display: flex;
+        list-style: none;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 20px;
+    }
+
+    .wc-tabs li {
+        margin-right: 20px;
+    }
+
+    .wc-tabs a {
+        display: block;
+        padding: 10px 0;
+        font-weight: 600;
+        position: relative;
+        color: var(--secondary-color);
+    }
+
+    .wc-tabs a:after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary-color);
+        transition: width 0.3s;
+    }
+
+    .wc-tabs a:hover:after, .wc-tabs li.active a:after {
+        width: 100%;
+    }
+
+    .woocommerce-Tabs-panel {
+        padding: 20px 0;
+        display: none;
+    }
+
+    .woocommerce-Tabs-panel.active {
+        display: block;
+    }
+
+    /* Related Products */
+    .related-products, .upsells-products {
+        margin-bottom: 50px;
+    }
+
+    .widget-title {
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .product-item {
+        border: 1px solid #eee;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .product-item:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .product-thumb {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-thumb img {
+        width: 100%;
+        height: auto;
+        transition: transform 0.5s;
+    }
+
+    .product-item:hover .product-thumb img {
+        transform: scale(1.05);
+    }
+
+    .product-info {
+        padding: 15px;
+    }
+
+    .product-name {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .product-price {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .product-price del {
+        color: #999;
+        font-size: 14px;
+        margin-right: 5px;
+    }
+
+    /* Reviews */
+    .woocommerce-Reviews {
+        margin-top: 30px;
+    }
+
+    .commentlist {
+        list-style: none;
+    }
+
+    .comment_container {
+        display: flex;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .comment_container img {
+        border-radius: 50%;
+        margin-right: 15px;
+    }
+
+    .comment-text {
+        flex: 1;
+    }
+
+    .woocommerce-review__author {
+        font-weight: 700;
+    }
+
+    .woocommerce-review__published-date {
+        color: var(--text-color);
+        font-size: 14px;
+    }
+
+    /* Review Form Wrapper */
+    #review_form_wrapper {
+        margin: 40px 0;
+        padding: 30px;
+        background: #fafafa;
+        border-radius: var(--border-radius);
+        border: 1px solid #e0e0e0;
+    }
+
+    #review_form {
+        max-width: 100%;
+    }
+
+    .comment-respond {
+        width: 100%;
+    }
+
+    .comment-respond h3 {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .comment-respond form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .comment-form-rating,
+    .comment-form-comment {
+        margin-bottom: 0;
+    }
+
+    .comment-form-rating label,
+    .comment-form-comment label {
+        display: block;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    #rating {
+        width: 200px;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        background: var(--white);
+        font-size: 14px;
+        color: var(--secondary-color);
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 16px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    #rating:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(255, 182, 0, 0.1);
+    }
+
+    #content {
+        width: 100%;
+        min-height: 120px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        line-height: 1.5;
+        resize: vertical;
+        transition: var(--transition);
+        font-family: 'Lato', sans-serif;
+    }
+
+    #content:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(255, 182, 0, 0.1);
+    }
+
+    .form-submit button {
+        background: var(--primary-color);
+        color: var(--white);
+        border: none;
+        padding: 12px 30px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-submit button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 182, 0, 0.3);
+    }
+
+    .must-log-in {
+        text-align: center;
+        padding: 30px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        border: 1px solid #e0e0e0;
+        color: var(--text-color);
+    }
+
+    .must-log-in a {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 767px) {
+        .single-product-info {
+            flex-direction: column;
+        }
+
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .breadcrumbs {
+            justify-content: flex-start;
+        }
+
+        .single_add_to_cart_button, .add-to-cart {
+            max-width: none;
+        }
+
+        #rating {
+            width: 100%;
+        }
+
+        #review_form_wrapper {
+            padding: 20px;
+        }
+    }
+</style>
+
+<!-- Page Title Section -->
+<section class="page-title-wrap">
+    <div class="page-title-overlay"></div>
+    <div class="container">
+        <div class="page-title-inner">
+            <h1>{{ product.name }}</h1>
+            <ul class="breadcrumbs">
+                <li><a href="{% url 'store:index' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'store:product_list' %}">Shop</a></li>
+                <li><a href="{% url 'store:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></li>
+                <li><span>{{ product.name }}</span></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Product Content -->
+<main class="single-product-wrap">
+    <div class="container">
+        <div class="single-product-inner">
+            <div id="product-{{ product.id }}" class="single-product">
+                <div class="single-product-info clearfix">
+                    <div class="single-product-image-wrap">
+                        <div class="single-product-image">
+                            {% if product.image %}
+                                <img width="350" height="350" src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img width="350" height="350" src="https://via.placeholder.com/350" alt="{{ product.name }}">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="summary-product-wrap">
+                        <div class="summary-product entry-summary">
+                            <h1 class="product_title entry-title">{{ product.name }}</h1>
+                            <div class="woocommerce-product-rating">
+                                {% if review_count > 0 %}
+                                    <div class="star-rating">
+                                        {% for i in "12345" %}
+                                            {% if i|add:"0" <= avg_rating|floatformat:0 %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span>{{ avg_rating|floatformat:1 }} average rating ({{ review_count }} reviews)</span>
+                                    </div>
+                                {% else %}
+                                    <span>No reviews yet</span>
+                                {% endif %}
+                            </div>
+
+                            <p class="price">GHS {{ product.price|floatformat:2 }}</p>
+
+                            <div class="product-single-short-description">
+                                <p>{{ product.description }}</p>
+                            </div>
+
+                            <form class="cart" action="{% url 'cart:cart_add' product.id %}" method="post" id="main-product-form-{{ product.id }}">
+                                {% csrf_token %}
+                                <div class="quantity">
+                                    <div class="quantity-inner">
+                                        <button type="button" class="btn-number minus-btn" data-product-id="{{ product.id }}">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" name="quantity" value="{% with cart_quantity=cart|lookup:product.id %}{{ cart_quantity|default:1 }}{% endwith %}" min="1" class="input-text qty" id="qty-{{ product.id }}">
+                                        <input type="hidden" name="override" value="True">
+                                        <button type="button" class="btn-number plus-btn" data-product-id="{{ product.id }}">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <span class="cart-quantity" id="cart-quantity-{{ product.id }}">
+                                        (In cart: {% with cart_quantity=cart|lookup:product.id %}{{ cart_quantity|default:0 }}{% endwith %})
+                                    </span>
+                                </div>
+                                <button type="submit" class="single_add_to_cart_button">Add to cart</button>
+                            </form>
+
+                            <div class="product_meta">
+                                <span class="posted_in">Category: <a href="{% url 'store:product_list_by_category' product.category.slug %}">{{ product.category.name }}</a></span>
+                                <span class="tagged_as">Type: {{ product.get_product_type_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Tabs -->
+                <div class="woocommerce-tabs">
+                    <ul class="wc-tabs">
+                        <li class="description_tab">
+                            <a href="#tab-description">Description</a>
+                        </li>
+                        <li class="reviews_tab">
+                            <a href="#tab-reviews">Reviews ({{ review_count }})</a>
+                        </li>
+                    </ul>
+
+                    <div class="woocommerce-Tabs-panel woocommerce-Tabs-panel--description active" id="tab-description">
+                        <p>{{ product.description }}</p>
+                    </div>
+
+                    <div class="woocommerce-Tabs-panel woocommerce-Tabs-panel--reviews" id="tab-reviews">
+                        <div id="reviews" class="woocommerce-Reviews">
+                            <div id="comments">
+                                <h2 class="woocommerce-Reviews-title">{{ review_count }} review{{ review_count|pluralize }} for <span>{{ product.name }}</span></h2>
+                                <ol class="commentlist">
+                                    {% for testimonial in approved_testimonials %}
+                                        <li class="review">
+                                            <div class="comment_container">
+                                                <img alt='' src="https://secure.gravatar.com/avatar/{{ testimonial.reviewer_name|slugify }}?s=60&d=mm&r=g" class='avatar'>
+                                                <div class="comment-text">
+                                                    <div class="star-rating">
+                                                        {% for i in "12345" %}
+                                                            {% if i|add:"0" <= testimonial.rating %}
+                                                                <i class="fas fa-star"></i>
+                                                            {% else %}
+                                                                <i class="far fa-star"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <p class="meta">
+                                                        <strong class="woocommerce-review__author">{{ testimonial.reviewer_name }}</strong>
+                                                        <span class="woocommerce-review__dash">–</span> 
+                                                        <time class="woocommerce-review__published-date">{{ testimonial.created|date:"F j, Y" }}</time>
+                                                    </p>
+                                                    <div class="description">
+                                                        <p>{{ testimonial.content }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% empty %}
+                                        <p>No reviews yet.</p>
+                                    {% endfor %}
+                                </ol>
+                            </div>
+
+                            <div id="review_form_wrapper">
+                                <div id="review_form">
+                                    <div class="comment-respond">
+                                        <h3>Add a review</h3>
+                                        {% if user.is_authenticated %}
+                                            <form action="{% url 'store:add_review' product.id %}" method="post">
+                                                {% csrf_token %}
+                                                <p class="comment-form-rating">
+                                                    <label for="rating">Your rating</label>
+                                                    <select name="rating" id="rating" required>
+                                                        <option value="">Rate…</option>
+                                                        <option value="5">Perfect</option>
+                                                        <option value="4">Good</option>
+                                                        <option value="3">Average</option>
+                                                        <option value="2">Not that bad</option>
+                                                        <option value="1">Very poor</option>
+                                                    </select>
+                                                </p>
+                                                <p class="comment-form-comment">
+                                                    <label for="content">Your review</label>
+                                                    <textarea name="content" id="content" required></textarea>
+                                                </p>
+                                                <p class="form-submit">
+                                                    <button type="submit">Submit</button>
+                                                </p>
+                                            </form>
+                                        {% else %}
+                                            <p class="must-log-in">You must be <a href="{% url 'store:login' %}">logged in</a> to post a review.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Products -->
+                {% if related_products_with_ratings %}
+                    <div class="related-products">
+                        <h4 class="widget-title">Related Products</h4>
+                        <div class="product-grid">
+                            {% for item in related_products_with_ratings %}
+                                <div class="product-item">
+                                    <div class="product-thumb">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/300" alt="{{ item.product.name }}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="product-info">
+                                        <a href="{% url 'store:product_detail' item.product.slug %}" class="product-name">{{ item.product.name }}</a>
+                                        <div class="product-price">GHS {{ item.product.price|floatformat:2 }}</div>
+                                        <form action="{% url 'cart:cart_add' item.product.id %}" method="post" class="cart-related-form" id="cart-related-form-{{ item.product.id }}">
+                                            {% csrf_token %}
+                                            <div class="quantity">
+                                                <div class="quantity-inner">
+                                                    <button type="button" class="btn-number minus-btn" data-product-id="{{ item.product.id }}">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <input type="number" name="quantity" value="{% with cart_quantity=cart|lookup:item.product.id %}{{ cart_quantity|default:1 }}{% endwith %}" min="1" class="input-text qty" id="qty-{{ item.product.id }}">
+                                                    <input type="hidden" name="override" value="True">
+                                                    <button type="button" class="btn-number plus-btn" data-product-id="{{ item.product.id }}">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                                <span class="cart-quantity" id="cart-quantity-{{ item.product.id }}">
+                                                    (In cart: {% with cart_quantity=cart|lookup:item.product.id %}{{ cart_quantity|default:0 }}{% endwith %})
+                                                </span>
+                                            </div>
+                                            <button type="submit" class="add-to-cart">Add to cart</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to get CSRF token from cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Function to calculate total items in cart from individual product quantities
+    function calculateTotalItems() {
+        let total = 0;
+        document.querySelectorAll('.cart-quantity').forEach(element => {
+            const text = element.textContent;
+            const match = text.match(/\(In cart: (\d+)\)/);
+            if (match) {
+                total += parseInt(match[1]);
+            }
+        });
+        return total;
+    }
+
+    // Function to update cart count display
+    function updateCartCount() {
+        const cartCountDisplay = document.getElementById('cart-total-items') || document.getElementById('btn-cart-count');
+        const floatingCart = document.getElementById('floating-cart');
+        const cartPopupMessage = document.getElementById('cartPopupMessage');
+        const totalItems = calculateTotalItems();
+
+        if (cartCountDisplay) {
+            cartCountDisplay.textContent = totalItems;
+        }
+
+        if (cartPopupMessage) {
+            cartPopupMessage.textContent = totalItems > 0 ? `You have ${totalItems} item${totalItems === 1 ? '' : 's'} in your cart` : 'Your cart is empty';
+        }
+
+        if (floatingCart) {
+            floatingCart.classList.add('cart-pulse');
+            setTimeout(() => {
+                floatingCart.classList.remove('cart-pulse');
+            }, 500);
+        }
+    }
+
+    // Quantity controls for main product and related products
+    const forms = document.querySelectorAll('.cart, .cart-related-form');
+    forms.forEach(form => {
+        const productId = form.id.replace('main-product-form-', '').replace('cart-related-form-', '');
+        const container = form.querySelector('.quantity-inner');
+        const minusButton = container.querySelector(`.minus-btn[data-product-id="${productId}"]`);
+        const plusButton = container.querySelector(`.plus-btn[data-product-id="${productId}"]`);
+        const input = container.querySelector(`#qty-${productId}`);
+        const submitButton = form.querySelector('.single_add_to_cart_button, .add-to-cart');
+        const cartQuantityDisplay = document.getElementById(`cart-quantity-${productId}`);
+
+        minusButton.addEventListener('click', function() {
+            let value = parseInt(input.value) || 1;
+            if (value > 1) {
+                input.value = value - 1;
+                console.log(`Decreased quantity for product ${productId} to ${input.value}`);
+            }
+        });
+
+        plusButton.addEventListener('click', function() {
+            let value = parseInt(input.value) || 1;
+            input.value = value + 1;
+            console.log(`Increased quantity for product ${productId} to ${input.value}`);
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            formData.set('quantity', input.value);
+
+            minusButton.disabled = true;
+            plusButton.disabled = true;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Adding...';
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update individual product cart quantity
+                    if (cartQuantityDisplay) {
+                        cartQuantityDisplay.textContent = `(In cart: ${data.quantity})`;
+                    }
+                    input.value = data.quantity;
+                    // Update total cart count
+                    updateCartCount();
+                    alert('Product added to cart successfully!');
+                } else {
+                    alert('Failed to add product to cart: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding product to cart');
+            })
+            .finally(() => {
+                minusButton.disabled = false;
+                plusButton.disabled = false;
+                submitButton.disabled = false;
+                submitButton.textContent = form.classList.contains('cart') ? 'Add to cart' : 'Add to Cart';
+            });
+        });
+    });
+
+    // Tab functionality
+    const tabLinks = document.querySelectorAll('.wc-tabs a');
+    const tabPanes = document.querySelectorAll('.woocommerce-Tabs-panel');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            tabLinks.forEach(tab => tab.parentElement.classList.remove('active'));
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+            this.parentElement.classList.add('active');
+            const target = this.getAttribute('href');
+            document.querySelector(target).classList.add('active');
+        });
+    });
+
+    // Activate first tab by default
+    if (tabLinks.length > 0) {
+        tabLinks[0].parentElement.classList.add('active');
+        tabPanes[0].classList.add('active');
+    }
+});
+</script>
+{% endblock %}
