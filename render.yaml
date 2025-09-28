@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: buildkit
+    env: python
+    pythonVersion: "3.11" # Using 3.11 for better compatibility with Pillow
+    poetryVersion: "2.1.3" # Matching the Poetry version from the logs
+    plan: free
+    buildCommand: |
+      apt-get update && apt-get install -y libjpeg-dev zlib1g-dev libpng-dev
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: python manage.py runserver 0.0.0.0:8000
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: DJANGO_SETTINGS_MODULE
+        value: "buildkit.settings" # Adjust if your settings module is different
