@@ -17,9 +17,9 @@ services:
         - key: DJANGO_SETTINGS_MODULE
           value: "buildkit.settings"
         - key: DEBUG
-          value: "False"
+          value: "True"
         - key: ALLOWED_HOSTS
-          value: "https://buildkit-ywck.onrender.com"
+          value: "https://buildkit-9xl4.onrender.com"
         - key: SECRET_KEY
           value: "change-this-to-a-random-secret-key"
         - key: CLOUDINARY_CLOUD_NAME
