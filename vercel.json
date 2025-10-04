@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "buildkit/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "buildkit/wsgi.py"
+      "dest": "/api/index.py"
     }
   ]
 }
