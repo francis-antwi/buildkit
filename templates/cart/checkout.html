@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
  <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -368,7 +369,7 @@
                                 <td class="product-name">
                                     <div class="product-name">
                                         {% if item.product.image %}
-                                            <img src="{% static '{{ item.product.image.url }}' %}" alt="{{ item.product.name }}" width="80" height="80">
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80" height="80">
                                         {% else %}
                                             <img src="https://via.placeholder.com/80x80/cccccc/666666?text={{ item.product.name|urlencode }}" alt="{{ item.product.name }}">
                                         {% endif %}
