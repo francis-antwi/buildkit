@@ -6,459 +6,456 @@
 <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Oswald:400,700" rel="stylesheet">
 
     <style>
-    body {
-        font-family: 'Arial', sans-serif;
-        font-weight: 400;
-        font-size: 14px;
-        margin: 0;
-        padding: 0;
-    }
-    
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Arial', sans-serif;
-        font-weight: 600;
-    }
-    
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 15px;
-    }
-    
-    /* Page Title */
-    .page-title-wrap {
-        background-image: url(https://img.freepik.com/premium-vector/concept-banner-with-realistic-shopping-cart-yellow-background-vector-illustration_548887-101.jpg);
-        padding: 100px 0 60px;
-        text-align: center;
-        color: white;
-        position: relative;
-    }
-    
-    .page-title-wrap h1 {
-        font-size: 48px;
-        margin-bottom: 20px;
-        color: white;
-    }
-    
-    .breadcrumbs {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: inline-flex;
-        gap: 10px;
-    }
-    
-    .breadcrumbs li {
-        color: #bdc3c7;
-    }
-    
-    .breadcrumbs a {
-        color: white;
-        text-decoration: none;
-    }
-    
-    
-    
-    .shop_table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 40px;
-    }
-    
-    .shop_table th,
-    .shop_table td {
-        padding: 20px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
-        vertical-align: middle;
-    }
-    
-    .shop_table th {
-        background: #f8f9fa;
-        font-weight: 600;
-        color: #2c3e50;
-    }
-    
-    .product-name {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .product-name img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-    }
-    
-    .quantity {
-        display: flex;
-        align-items: center;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        overflow: hidden;
-        width: 120px;
-    }
-    
-    .quantity button {
-        border: none;
-        background: #f8f9fa;
-        padding: 8px 12px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .quantity button:hover {
-        background: #ff6b35;
-        color: white;
-    }
-    
-    .quantity input {
-        border: none;
-        text-align: center;
-        width: 60px;
-        padding: 8px;
-    }
-    
-    .cart-remove {
-        color: #e74c3c;
-        font-size: 16px;
-        text-decoration: none;
-    }
-    
-    .cart-remove:hover {
-        color: #c0392b;
-    }
-    
-    .actions {
-        background: #f8f9fa;
-    }
-    
-    .button {
-        background: #ff6b35;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 3px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-    
-    .button:hover {
-        background: #e55a2b;
-        color: white;
-        text-decoration: none;
-    }
-    
-    .checkout-button {
-        background: #27ae60;
-        float: right;
-    }
-    
-    .checkout-button:hover {
-        background: #229954;
-    }
-    
-    /* Cart Totals */
-    .cart-collaterals-wrap {
-        background: #f8f9fa;
-        padding: 40px 0;
-    }
-    
-    .cart-collaterals {
-        display: flex;
-        gap: 40px;
-    }
-    
-    .cart_totals {
-        flex: 1;
-    }
-    
-    .cart_totals h2 {
-        color: #2c3e50;
-        margin-bottom: 30px;
-    }
-    
-    .cart_totals table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .cart_totals td,
-    .cart_totals th {
-        padding: 15px 20px;
-        border-bottom: 1px solid #ddd;
-    }
-    
-    .cart_totals th {
-        background: white;
-        font-weight: 600;
-    }
-    
-    .order-total {
-        background: #2c3e50;
-        color: white;
-    }
-    
-    .order-total th,
-    .order-total td {
-        color: white;
-        font-weight: 600;
-        font-size: 16px;
-    }
-    
-    /* Shipping Calculator */
-    .woocommerce-shipping-calculator h2 {
-        color: #2c3e50;
-        margin-bottom: 20px;
-    }
-    
-    .shipping-calculator-form .form-row {
-        margin-bottom: 20px;
-    }
-    
-    .shipping-calculator-form input,
-    .shipping-calculator-form select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .cart-collaterals {
-            flex-direction: column;
+        :root {
+            --primary-color: #1e40af;
+            --primary-dark: #1e3a8a;
+            --secondary-color: #000000;
+            --text-color: #666;
+            --white: #ffffff;
+            --gray-light: #f1f1f1;
+            --shadow: 0 2px 15px rgba(0,0,0,0.1);
+            --shadow-hover: 0 10px 20px rgba(0,0,0,0.1);
+            --border-radius: 5px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: var(--text-color);
         }
         
-        .actions {
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Page Title */
+        .page-title-wrap {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            padding: 100px 0 60px;
             text-align: center;
+            color: white;
+            position: relative;
+            margin-bottom: 40px;
         }
         
-        .checkout-button {
-            float: none;
-            margin-top: 10px;
+        .page-title-wrap h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: white;
         }
         
+        .breadcrumbs {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: inline-flex;
+            gap: 10px;
+        }
+        
+        .breadcrumbs li {
+            color: #bdc3c7;
+        }
+        
+        .breadcrumbs a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .breadcrumbs a:hover {
+            color: #93c5fd;
+        }
+        
+        /* Cart Table */
         .shop_table {
-            font-size: 12px;
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
         
         .shop_table th,
         .shop_table td {
-            padding: 10px 5px;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: middle;
         }
-    }
-       /* Cart Collaterals */
-    .cart-collaterals {
-        display: flex;
-        gap: 40px;
-        flex-wrap: wrap;
-        margin-top: 40px;
-        font-family: 'Lato', sans-serif;
-    }
-
-    /* Delivery Calculator */
-    .woocommerce-delivery-calculator {
-        flex: 1;
-        background: var(--white);
-        padding: 25px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        transition: var(--transition);
-    }
-
-    .woocommerce-delivery-calculator:hover {
-        box-shadow: var(--shadow-hover);
-        transform: translateY(-5px);
-    }
-
-    .woocommerce-delivery-calculator h2 {
-        font-family: 'Oswald', sans-serif;
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--secondary-color);
-        text-transform: uppercase;
-        margin-bottom: 20px;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 10px;
-    }
-
-    .delivery-calculator-form .form-row {
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .delivery-calculator-form select,
-    .delivery-calculator-form input[type="text"] {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: var(--border-radius);
-        font-family: 'Lato', sans-serif;
-        font-size: 14px;
-        color: var(--text-color);
-        background: var(--white);
-        transition: var(--transition);
-    }
-
-    .delivery-calculator-form select:focus,
-    .delivery-calculator-form input[type="text"]:focus {
-        border-color: var(--primary-color);
-        outline: none;
-        box-shadow: 0 0 5px rgba(255, 182, 0, 0.3);
-    }
-
-    .delivery-calculator-form input[type="radio"] {
-        margin: 0 10px 0 0;
-        accent-color: var(--primary-color);
-        width: 18px;
-        height: 18px;
-    }
-
-    .delivery-calculator-form label {
-        font-family: 'Lato', sans-serif;
-        font-size: 14px;
-        color: var(--text-color);
-        margin: 0;
-        display: flex;
-        align-items: center;
-    }
-
-    .delivery-calculator-form .price {
-        color: var(--primary-color);
-        font-weight: 600;
-        margin-left: 5px;
-    }
-
-    .delivery-calculator-form .button {
-        background: var(--primary-color);
-        color: var(--secondary-color);
-        border: none;
-        padding: 12px 25px;
-        border-radius: var(--border-radius);
-        font-family: 'Oswald', sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        cursor: pointer;
-        width: 100%;
-        text-align: center;
-        transition: var(--transition);
-        box-shadow: var(--shadow);
-    }
-
-    .delivery-calculator-form .button:hover {
-        background: var(--primary-dark);
-        color: var(--white);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-hover);
-    }
-
-    /* Cart Totals */
-    .cart_totals {
-        flex: 1;
-        background: var(--white);
-        padding: 25px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        transition: var(--transition);
-    }
-
-    .cart_totals:hover {
-        box-shadow: var(--shadow-hover);
-        transform: translateY(-5px);
-    }
-
-    .cart_totals h2 {
-        font-family: 'Oswald', sans-serif;
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--secondary-color);
-        text-transform: uppercase;
-        margin-bottom: 20px;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 10px;
-    }
-
-    .cart_totals table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .cart_totals th,
-    .cart_totals td {
-        padding: 15px 20px;
-        border-bottom: 1px solid #ddd;
-        font-family: 'Lato', sans-serif;
-        font-size: 14px;
-        color: var(--text-color);
-    }
-
-    .cart_totals th {
-        font-family: 'Oswald', sans-serif;
-        font-weight: 600;
-        color: var(--secondary-color);
-        text-transform: uppercase;
-        width: 40%;
-    }
-
-    .cart_totals .price {
-        color: var(--primary-color);
-        font-weight: 700;
-        font-size: 16px;
-    }
-
-    .cart_totals p {
-        margin: 5px 0 0;
-        font-size: 14px;
-        color: var(--text-color);
-    }
-
-    .cart_totals .order-total {
-        background: var(--secondary-color);
-    }
-
-    .cart_totals .order-total th,
-    .cart_totals .order-total td {
-        color: var(--white);
-        font-family: 'Oswald', sans-serif;
-        font-weight: 600;
-        font-size: 16px;
-    }
-
-    .cart_totals .order-total .price {
-        color: var(--white);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .cart-collaterals {
-            flex-direction: column;
+        
+        .shop_table th {
+            background: var(--primary-dark);
+            font-weight: 600;
+            color: var(--white);
+        }
+        
+        .product-name {
+            display: flex;
+            align-items: center;
             gap: 20px;
         }
-
-        .woocommerce-delivery-calculator,
-        .cart_totals {
+        
+        .product-name img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+        }
+        
+        .quantity {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            width: 120px;
+        }
+        
+        .quantity button {
+            border: none;
+            background: var(--gray-light);
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .quantity button:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .quantity input {
+            border: none;
+            text-align: center;
+            width: 60px;
+            padding: 8px;
+        }
+        
+        .cart-remove {
+            color: #e74c3c;
+            font-size: 16px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .cart-remove:hover {
+            color: #c0392b;
+        }
+        
+        .actions {
+            background: var(--gray-light);
             padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .button {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .button:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(30, 64, 175, 0.3);
+        }
+        
+        .checkout-button {
+            background: var(--primary-dark);
+            float: right;
+        }
+        
+        .checkout-button:hover {
+            background: var(--primary-color);
+        }
+        
+        /* Cart Totals Section */
+        .cart-collaterals-wrap {
+            background: var(--white);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .cart-collaterals {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        /* Delivery Calculator */
+        .woocommerce-delivery-calculator {
+            flex: 1;
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .woocommerce-delivery-calculator:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .woocommerce-delivery-calculator h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .delivery-calculator-form .form-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .delivery-calculator-form select,
+        .delivery-calculator-form input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            color: var(--text-color);
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .delivery-calculator-form select:focus,
+        .delivery-calculator-form input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 5px rgba(30, 64, 175, 0.3);
+        }
+
+        .delivery-calculator-form input[type="radio"] {
+            margin: 0 10px 0 0;
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .delivery-calculator-form label {
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .delivery-calculator-form .price {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .delivery-calculator-form .button {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius);
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .delivery-calculator-form .button:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Cart Totals */
+        .cart_totals {
+            flex: 1;
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .cart_totals:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .cart_totals h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .cart_totals table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
         .cart_totals th,
         .cart_totals td {
-            padding: 10px;
-            font-size: 12px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            color: var(--text-color);
         }
 
-        .delivery-calculator-form .button {
-            padding: 10px;
+        .cart_totals th {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            width: 40%;
         }
-    }
-</style>
+
+        .cart_totals .price {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .cart_totals p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .cart_totals .order-total {
+            background: var(--secondary-color);
+        }
+
+        .cart_totals .order-total th,
+        .cart_totals .order-total td {
+            color: var(--white);
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .cart_totals .order-total .price {
+            color: var(--white);
+        }
+
+        /* Continue Shopping Section */
+        .continue-shopping {
+            text-align: center;
+            padding: 40px 0;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+
+        .continue-shopping h3 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cart-collaterals {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .woocommerce-delivery-calculator,
+            .cart_totals {
+                padding: 20px;
+            }
+
+            .cart_totals th,
+            .cart_totals td {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .delivery-calculator-form .button {
+                padding: 10px;
+            }
+
+            .actions {
+                text-align: center;
+                flex-direction: column;
+            }
+            
+            .checkout-button {
+                float: none;
+                margin-top: 10px;
+            }
+            
+            .shop_table {
+                font-size: 12px;
+            }
+            
+            .shop_table th,
+            .shop_table td {
+                padding: 10px 5px;
+            }
+            
+            .product-name {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .page-title-wrap h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
 </head>
 <section class="page-title-wrap">
     <div class="container">
