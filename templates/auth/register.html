@@ -198,290 +198,416 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 <!-- JavaScript for Real Firebase Implementation -->
 <script>
-    // Firebase configuration - Use actual values or safe fallback
-    const firebaseConfig = {
-        apiKey: "{{ FIREBASE_WEB_API_KEY|default:'demo-key' }}",
-        authDomain: "{{ FIREBASE_AUTH_DOMAIN|default:'demo.firebaseapp.com' }}",
-        projectId: "{{ FIREBASE_PROJECT_ID|default:'demo-project' }}",
-        appId: "{{ FIREBASE_APP_ID|default:'demo-app-id' }}"
-    };
-
-    // Initialize Firebase only if config values are not demo
-    let firebaseApp;
-    let recaptchaVerifier;
-    let confirmationResult;
-
-    // Check if we have real Firebase config (not demo values)
-    const hasRealFirebaseConfig = firebaseConfig.apiKey && 
-                                 firebaseConfig.apiKey !== 'demo-key' && 
-                                 firebaseConfig.apiKey !== '';
-
-    if (hasRealFirebaseConfig) {
-        try {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.log("Firebase initialization error:", error);
-        }
-    } else {
-        console.log("Firebase not configured - using fallback mode");
-    }
-
-    // Copy code to clipboard
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(function() {
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = 'Copied!';
-            btn.classList.remove('btn-outline-secondary');
-            btn.classList.add('btn-success');
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-outline-secondary');
-            }, 2000);
-        }).catch(function(err) {
-            console.error('Could not copy text: ', err);
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = 'Copied!';
-            setTimeout(() => {
-                btn.textContent = originalText;
-            }, 2000);
-        });
-    }
+ // Firebase Real Implementation
+const firebaseConfig = {
+    apiKey: "{{ FIREBASE_WEB_API_KEY }}",
+    authDomain: "{{ FIREBASE_AUTH_DOMAIN }}",
+    projectId: "{{ FIREBASE_PROJECT_ID }}",
+    storageBucket: "{{ FIREBASE_STORAGE_BUCKET }}",
+    messagingSenderId: "{{ FIREBASE_MESSAGING_SENDER_ID }}",
+    appId: "{{ FIREBASE_APP_ID }}"
+};
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Firebase Config Check:");
+    console.log("API Key:", "{{ FIREBASE_WEB_API_KEY }}" ? "✅ Set" : "❌ Missing");
+    console.log("Auth Domain:", "{{ FIREBASE_AUTH_DOMAIN }}" ? "✅ Set" : "❌ Missing");
+    console.log("Project ID:", "{{ FIREBASE_PROJECT_ID }}" ? "✅ Set" : "❌ Missing");
+    console.log("App ID:", "{{ FIREBASE_APP_ID }}" ? "✅ Set" : "❌ Missing");
     
-    // Auto-format phone number
-    document.addEventListener('DOMContentLoaded', function() {
-        const phoneInput = document.getElementById('phoneNumber');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                // Remove any non-digit characters
-                this.value = this.value.replace(/\D/g, '');
-                
-                // Limit to 9 digits for Ghana numbers
-                if (this.value.length > 9) {
-                    this.value = this.value.slice(0, 9);
-                }
-            });
+    // Test Firebase initialization
+    try {
+        if (firebaseApp) {
+            console.log("✅ Firebase initialized successfully");
+        } else {
+            console.log("❌ Firebase not initialized");
         }
-        
-        // Auto-advance OTP input (but don't auto-submit to prevent double submission)
-        const verificationInput = document.getElementById('verificationCode');
-        if (verificationInput) {
-            verificationInput.addEventListener('input', function(e) {
-                // Remove any non-digit characters
-                this.value = this.value.replace(/\D/g, '');
-                
-                // Don't auto-submit - let user click the button to prevent double submission
-                // Just ensure the input is clean
-            });
-            
-            // Focus on OTP input
-            setTimeout(() => {
-                verificationInput.focus();
-            }, 500);
-        }
+    } catch (e) {
+        console.log("❌ Firebase error:", e);
+    }
+});
 
-        // Add loading state to form submission and prevent double submission
-        const registerForm = document.getElementById('registerForm');
-        if (registerForm) {
-            let isSubmitting = false;
-            
-            registerForm.addEventListener('submit', function(e) {
-                if (isSubmitting) {
-                    e.preventDefault();
-                    return;
-                }
-                
-                isSubmitting = true;
-                const button = document.getElementById('sendCodeButton');
-                if (button) {
-                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sending Code...';
-                    button.disabled = true;
-                }
-                
-                // Re-enable after 5 seconds in case of error
-                setTimeout(() => {
-                    isSubmitting = false;
-                    if (button) {
-                        button.innerHTML = 'Send Verification Code';
-                        button.disabled = false;
-                    }
-                }, 5000);
-            });
-        }
+// Initialize Firebase
+let firebaseApp;
+let recaptchaVerifier;
+let confirmationResult;
 
-        const verificationForm = document.getElementById('verificationForm');
-        if (verificationForm) {
-            let isVerifying = false;
-            
-            verificationForm.addEventListener('submit', function(e) {
-                if (isVerifying) {
-                    e.preventDefault();
-                    return;
-                }
-                
-                isVerifying = true;
-                const button = document.getElementById('verifyButton');
-                if (button) {
-                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Verifying...';
-                    button.disabled = true;
-                }
-                
-                // Re-enable after 5 seconds in case of error
-                setTimeout(() => {
-                    isVerifying = false;
-                    if (button) {
-                        button.innerHTML = 'Verify & Create Account';
-                        button.disabled = false;
-                    }
-                }, 5000);
-            });
-        }
-    });
-    
-    // Resend code function with Firebase
-    function resendCode() {
-        const resendBtn = document.getElementById('resendCode');
-        if (!resendBtn) return false;
-        
-        const originalText = resendBtn.innerHTML;
-        
-        resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sending...';
-        resendBtn.classList.add('disabled');
-        
-        // Use AJAX to resend code
-        fetch('{% url "store:resend_verification" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showToast('Verification code sent successfully!', 'success');
-                // Restart countdown
-                startResendCountdown();
-            } else {
-                showToast('Failed to resend code: ' + (data.error || 'Unknown error'), 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Resend error:', error);
-            showToast('Error resending code. Please try again.', 'error');
-        })
-        .finally(() => {
-            // Reset button after 2 seconds
-            setTimeout(() => {
-                resendBtn.innerHTML = originalText;
-                resendBtn.classList.remove('disabled');
-            }, 2000);
-        });
-        
+try {
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized successfully");
+} catch (error) {
+    console.error("Firebase initialization error:", error);
+}
+
+// Setup reCAPTCHA verifier
+function setupRecaptcha() {
+    if (!firebaseApp) {
+        console.error("Firebase not initialized");
         return false;
     }
     
-    // Show toast notification
-    function showToast(message, type = 'info') {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : (type === 'success' ? 'success' : 'info')} border-0`;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">${message}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
+    try {
+        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sendCodeButton', {
+            'size': 'invisible',
+            'callback': (response) => {
+                console.log("reCAPTCHA solved automatically");
+            },
+            'expired-callback': () => {
+                console.log("reCAPTCHA expired");
+                showToast('Security check expired. Please try again.', 'error');
+            }
+        });
+        return true;
+    } catch (error) {
+        console.error("reCAPTCHA setup error:", error);
+        return false;
+    }
+}
+
+// Send verification code via Firebase
+async function sendVerificationCode(phoneNumber) {
+    if (!firebaseApp) {
+        throw new Error('Firebase not configured');
+    }
+
+    if (!recaptchaVerifier) {
+        if (!setupRecaptcha()) {
+            throw new Error('Failed to setup security check');
+        }
+    }
+
+    try {
+        console.log("Sending verification code to:", phoneNumber);
         
-        // Add to page
-        document.body.appendChild(toast);
+        confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, recaptchaVerifier);
+        console.log("SMS sent successfully");
+        return true;
+    } catch (error) {
+        console.error("Error sending SMS:", error);
         
-        // Show toast
-        const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
-        bsToast.show();
+        // Handle specific Firebase errors
+        if (error.code === 'auth/invalid-phone-number') {
+            throw new Error('Invalid phone number format');
+        } else if (error.code === 'auth/quota-exceeded') {
+            throw new Error('SMS quota exceeded. Please try again later.');
+        } else if (error.code === 'auth/too-many-requests') {
+            throw new Error('Too many attempts. Please try again later.');
+        } else {
+            throw new Error('Failed to send SMS: ' + error.message);
+        }
+    }
+}
+
+// Verify the code entered by user
+async function verifyCode(verificationCode) {
+    if (!confirmationResult) {
+        throw new Error('No verification in progress. Please request a new code.');
+    }
+
+    try {
+        const result = await confirmationResult.confirm(verificationCode);
+        console.log("Phone verification successful:", result);
+        return result;
+    } catch (error) {
+        console.error("Error verifying code:", error);
         
-        // Remove after hide
-        toast.addEventListener('hidden.bs.toast', () => {
-            toast.remove();
+        if (error.code === 'auth/invalid-verification-code') {
+            throw new Error('Invalid verification code');
+        } else if (error.code === 'auth/code-expired') {
+            throw new Error('Verification code expired. Please request a new one.');
+        } else {
+            throw new Error('Verification failed: ' + error.message);
+        }
+    }
+}
+
+// Modified form submission for real Firebase
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('registerForm');
+    const verificationForm = document.getElementById('verificationForm');
+    
+    // Auto-format phone number
+    const phoneInput = document.getElementById('phoneNumber');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+            if (this.value.length > 9) {
+                this.value = this.value.slice(0, 9);
+            }
         });
     }
     
-    // Real-time password validation
-    document.addEventListener('DOMContentLoaded', function() {
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirmPassword');
-        
-        function validatePassword() {
-            if (password.value !== confirmPassword.value) {
-                confirmPassword.setCustomValidity("Passwords don't match");
-            } else {
-                confirmPassword.setCustomValidity('');
+    // Auto-format verification code
+    const verificationInput = document.getElementById('verificationCode');
+    if (verificationInput) {
+        verificationInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+            if (this.value.length > 6) {
+                this.value = this.value.slice(0, 6);
             }
-        }
+        });
         
-        if (password && confirmPassword) {
-            password.addEventListener('input', validatePassword);
-            password.addEventListener('change', validatePassword);
-            confirmPassword.addEventListener('input', validatePassword);
-            confirmPassword.addEventListener('keyup', validatePassword);
-        }
-    });
-
-    // Countdown timer for resend
-    let countdown = 60;
-    let countdownInterval;
-
-    function startResendCountdown() {
-        const resendBtn = document.getElementById('resendCode');
-        if (!resendBtn) return;
-
-        resendBtn.classList.add('disabled');
-        countdown = 60;
-
-        // Clear existing interval
-        if (countdownInterval) {
-            clearInterval(countdownInterval);
-        }
-
-        countdownInterval = setInterval(() => {
-            resendBtn.innerHTML = `Resend Code (${countdown}s)`;
-            countdown--;
-
-            if (countdown < 0) {
-                clearInterval(countdownInterval);
-                resendBtn.innerHTML = 'Resend Code';
-                resendBtn.classList.remove('disabled');
-            }
-        }, 1000);
+        setTimeout(() => {
+            verificationInput.focus();
+        }, 500);
     }
 
-    // Start countdown on verification page load
-    {% if verification_form %}
-    document.addEventListener('DOMContentLoaded', function() {
-        startResendCountdown();
+    // Handle registration form submission
+    if (registerForm) {
+        let isSubmitting = false;
+        
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (isSubmitting) return;
+            isSubmitting = true;
+            
+            const button = document.getElementById('sendCodeButton');
+            const originalText = button.innerHTML;
+            
+            try {
+                button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sending Code...';
+                button.disabled = true;
+                
+                // Get phone number and format it
+                const phoneNumber = '+233' + document.getElementById('phoneNumber').value;
+                console.log("Attempting to send SMS to:", phoneNumber);
+                
+                // Send verification code via Firebase
+                const success = await sendVerificationCode(phoneNumber);
+                
+                if (success) {
+                    console.log("SMS sent successfully, submitting form...");
+                    
+                    // Store Firebase confirmation in hidden field
+                    const firebaseField = document.createElement('input');
+                    firebaseField.type = 'hidden';
+                    firebaseField.name = 'firebase_verification_sent';
+                    firebaseField.value = 'true';
+                    registerForm.appendChild(firebaseField);
+                    
+                    // Store phone number in hidden field
+                    const phoneField = document.createElement('input');
+                    phoneField.type = 'hidden';
+                    phoneField.name = 'formatted_phone';
+                    phoneField.value = phoneNumber;
+                    registerForm.appendChild(phoneField);
+                    
+                    // Submit the form normally
+                    registerForm.submit();
+                }
+                
+            } catch (error) {
+                console.error("SMS sending failed:", error);
+                showToast('Failed to send SMS: ' + error.message, 'error');
+                
+                // Fallback: submit form without Firebase (will use backup code)
+                console.log("Using fallback mode...");
+                registerForm.submit();
+            } finally {
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    isSubmitting = false;
+                }, 3000);
+            }
+        });
+    }
+
+    // Handle verification form submission
+    if (verificationForm) {
+        let isVerifying = false;
+        
+        verificationForm.addEventListener('submit', async function(e) {
+            if (isVerifying) {
+                e.preventDefault();
+                return;
+            }
+            
+            isVerifying = true;
+            const button = document.getElementById('verifyButton');
+            const originalText = button.innerHTML;
+            
+            try {
+                button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Verifying...';
+                button.disabled = true;
+                
+                // Try Firebase verification first
+                const verificationCode = document.getElementById('verificationCode').value;
+                
+                if (confirmationResult && verificationCode.length === 6) {
+                    try {
+                        const result = await verifyCode(verificationCode);
+                        console.log("Firebase verification successful");
+                        
+                        // Add Firebase verification success marker
+                        const firebaseSuccess = document.createElement('input');
+                        firebaseSuccess.type = 'hidden';
+                        firebaseSuccess.name = 'firebase_verified';
+                        firebaseSuccess.value = 'true';
+                        verificationForm.appendChild(firebaseSuccess);
+                        
+                    } catch (firebaseError) {
+                        console.log("Firebase verification failed, using fallback:", firebaseError);
+                        // Continue with fallback verification
+                    }
+                }
+                
+                // Form will submit normally for fallback verification
+                
+            } catch (error) {
+                console.error("Verification error:", error);
+                showToast('Verification error: ' + error.message, 'error');
+                e.preventDefault();
+            } finally {
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    isVerifying = false;
+                }, 2000);
+            }
+        });
+    }
+    
+    // Enhanced resend code function
+    window.resendCode = async function() {
+        const resendBtn = document.getElementById('resendCode');
+        if (!resendBtn || resendBtn.classList.contains('disabled')) return false;
+        
+        const originalText = resendBtn.innerHTML;
+        resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sending...';
+        resendBtn.classList.add('disabled');
+        
+        try {
+            // Get phone number from session or form
+            const phoneNumber = '+233{{ form.phone_number.value|default:"" }}';
+            
+            if (phoneNumber && phoneNumber.length === 13) {
+                await sendVerificationCode(phoneNumber);
+                showToast('New verification code sent!', 'success');
+                startResendCountdown();
+            } else {
+                // Use AJAX fallback
+                const response = await fetch('{% url "store:resend_verification" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast('New code generated!', 'success');
+                    startResendCountdown();
+                } else {
+                    throw new Error(data.error || 'Failed to resend code');
+                }
+            }
+        } catch (error) {
+            console.error('Resend error:', error);
+            showToast('Error: ' + error.message, 'error');
+        } finally {
+            setTimeout(() => {
+                resendBtn.innerHTML = originalText;
+                if (!resendBtn.innerHTML.includes('(')) {
+                    resendBtn.classList.remove('disabled');
+                }
+            }, 2000);
+        }
+        
+        return false;
+    };
+});
+
+// Copy code to clipboard
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.remove('btn-outline-secondary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+        // Fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        const btn = event.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+        }, 2000);
     });
-    {% endif %}
+}
+
+// Show toast notification
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : (type === 'success' ? 'success' : 'info')} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+
+// Countdown timer for resend
+let countdown = 60;
+let countdownInterval;
+
+function startResendCountdown() {
+    const resendBtn = document.getElementById('resendCode');
+    if (!resendBtn) return;
+
+    resendBtn.classList.add('disabled');
+    countdown = 60;
+
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+
+    countdownInterval = setInterval(() => {
+        resendBtn.innerHTML = `Resend Code (${countdown}s)`;
+        countdown--;
+
+        if (countdown < 0) {
+            clearInterval(countdownInterval);
+            resendBtn.innerHTML = 'Resend Code';
+            resendBtn.classList.remove('disabled');
+        }
+    }, 1000);
+}
+
+// Start countdown on verification page load
+{% if verification_form %}
+document.addEventListener('DOMContentLoaded', function() {
+    startResendCountdown();
+});
+{% endif %}
 
     // Password strength indicator (optional enhancement)
     document.addEventListener('DOMContentLoaded', function() {

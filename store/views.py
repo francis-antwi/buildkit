@@ -19,6 +19,7 @@ from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.conf import settings
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -154,12 +155,21 @@ def register(request):
     
     # Clear session data when accessing the registration page via GET
     if request.method == 'GET':
-        # Only clear if coming from outside the verification flow
         referer = request.META.get('HTTP_REFERER', '')
         if 'verification' not in referer and 'register' not in referer:
             cleanup_session(request)
             print("🧹 Session cleaned up on GET request")
     
+    # Base context with Firebase config
+    base_context = {
+        'FIREBASE_WEB_API_KEY': settings.FIREBASE_WEB_API_KEY,
+        'FIREBASE_AUTH_DOMAIN': settings.FIREBASE_AUTH_DOMAIN,
+        'FIREBASE_PROJECT_ID': settings.FIREBASE_PROJECT_ID,
+        'FIREBASE_APP_ID': settings.FIREBASE_APP_ID,
+        'FIREBASE_MESSAGING_SENDER_ID': settings.FIREBASE_MESSAGING_SENDER_ID,
+        'FIREBASE_STORAGE_BUCKET': settings.FIREBASE_STORAGE_BUCKET,
+    }
+        
     if request.method == 'POST' and 'verification_code' not in request.POST:
         print("📝 Processing INITIAL registration form")
         
@@ -181,7 +191,6 @@ def register(request):
             # Check if user was created during form processing
             if User.objects.filter(username=username).exists():
                 print(f"🚨 CRITICAL ERROR: User {username} was created during form processing!")
-                print("🔍 This means the form or something in form validation is creating users")
                 messages.error(request, 'System error: User was created unexpectedly. Please contact support.')
                 cleanup_session(request)
                 return redirect('store:register')
@@ -189,30 +198,70 @@ def register(request):
                 print(f"✅ Good: User {username} does not exist yet - proceeding to OTP")
             
             # Store cleaned form data in session (DON'T save user yet)
+            phone_number = form.cleaned_data['phone_number']
+            formatted_phone = f"+233{phone_number}"
+            
             request.session['registration_data'] = {
                 'username': form.cleaned_data['username'],
                 'full_name': form.cleaned_data['full_name'],
                 'email': form.cleaned_data['email'],
-                'phone_number': form.cleaned_data['phone_number'],
+                'phone_number': phone_number,
                 'password': form.cleaned_data['password1'],
+                'formatted_phone': formatted_phone,
             }
             
-            # FORCE FALLBACK MODE FOR NOW (until Firebase is configured)
-            phone_number = form.cleaned_data['phone_number']
-            verification_code = str(random.randint(100000, 999999))
-            
-            request.session['verification_code'] = verification_code
-            request.session['verification_code_created_at'] = str(time.time())
-            request.session['using_firebase'] = False
-            
-            print(f"📱 Using FALLBACK mode. Code for +233{phone_number}: {verification_code}")
-            print(f"💾 Session after storing: {dict(request.session)}")
-            
-            messages.info(request, f"📱 Verification code: {verification_code}")
-            return render(request, 'auth/register.html', {'verification_form': VerificationForm()})
+            # TRY REAL FIREBASE FIRST
+            try:
+                print(f"📱 Attempting REAL Firebase SMS to: {formatted_phone}")
+                
+                # Check if Firebase is properly configured
+                if not all([settings.FIREBASE_WEB_API_KEY, settings.FIREBASE_AUTH_DOMAIN, 
+                           settings.FIREBASE_PROJECT_ID, settings.FIREBASE_APP_ID]):
+                    raise Exception("Firebase configuration incomplete")
+                
+                # For real Firebase, we don't generate a code - Firebase handles it
+                request.session['using_firebase'] = True
+                request.session['firebase_phone_number'] = formatted_phone
+                
+                print("✅ Firebase setup complete - SMS should be sent via frontend")
+                
+                # Show verification form - frontend will handle SMS sending
+                context = {
+                    **base_context,  # Include Firebase config
+                    'verification_form': VerificationForm(),
+                    'firebase_phone': formatted_phone,
+                }
+                return render(request, 'auth/register.html', context)
+                
+            except Exception as e:
+                print(f"❌ Firebase setup failed: {e}")
+                # FALLBACK MODE
+                verification_code = str(random.randint(100000, 999999))
+                
+                request.session['verification_code'] = verification_code
+                request.session['verification_code_created_at'] = str(time.time())
+                request.session['using_firebase'] = False
+                
+                print(f"📱 Using FALLBACK mode. Code for {formatted_phone}: {verification_code}")
+                print(f"💾 Session after storing: {dict(request.session)}")
+                
+                messages.info(request, f"📱 Verification code: {verification_code}")
+                
+                context = {
+                    **base_context,  # Include Firebase config
+                    'verification_form': VerificationForm(),
+                }
+                return render(request, 'auth/register.html', context)
+                
         else:
             print("❌ Form validation failed")
             messages.error(request, 'Please correct the errors below.')
+            
+            context = {
+                **base_context,  # Include Firebase config
+                'form': form,
+            }
+            return render(request, 'auth/register.html', context)
     
     elif request.method == 'POST' and 'verification_code' in request.POST:
         print("🔐 Processing verification form")
@@ -229,18 +278,22 @@ def register(request):
             print(f"📋 Session data before verification: {dict(request.session)}")
             
             # Check if using Firebase or fallback
-            if request.session.get('using_firebase') and 'firebase_session_info' in request.session:
-                print("🔑 Using Firebase verification")
-                session_info = request.session['firebase_session_info']
-                verification_result = verify_firebase_otp(session_info, entered_code)
+            if request.session.get('using_firebase'):
+                print("🔑 Attempting Firebase verification")
                 
-                if verification_result['success']:
-                    print("✅ Firebase verification successful!")
+                # Check if Firebase verification was successful (frontend should set this)
+                if request.POST.get('firebase_verified') == 'true':
+                    print("✅ Firebase verification successful via frontend!")
                     return complete_registration(request)
                 else:
-                    print(f"❌ Firebase verification failed: {verification_result['error']}")
-                    messages.error(request, f"Invalid verification code: {verification_result['error']}")
-                    return render(request, 'auth/register.html', {'verification_form': VerificationForm()})
+                    print("❌ Firebase verification not confirmed by frontend")
+                    # Fall back to manual verification
+                    stored_code = request.session.get('verification_code')
+                    if stored_code and entered_code == stored_code:
+                        print("✅ Fallback verification successful!")
+                        return complete_registration(request)
+                    else:
+                        messages.error(request, 'Invalid verification code.')
             
             else:
                 # Fallback manual verification
@@ -261,15 +314,25 @@ def register(request):
                 else:
                     print(f"❌ Verification failed. Stored: {stored_code}, Entered: {entered_code}")
                     messages.error(request, 'Invalid verification code.')
-                    return render(request, 'auth/register.html', {'verification_form': VerificationForm()})
+                    
         else:
             print("❌ Verification form invalid")
+        
+        context = {
+            **base_context,  # Include Firebase config
+            'verification_form': verification_form,
+        }
+        return render(request, 'auth/register.html', context)
     
     else:
         print("📄 Loading empty registration form")
         form = RegistrationForm()
-    
-    return render(request, 'auth/register.html', {'form': form})
+        
+        context = {
+            **base_context,  # Include Firebase config
+            'form': form,
+        }
+        return render(request, 'auth/register.html', context)
 
 def complete_registration(request):
     """Complete user registration after successful verification"""

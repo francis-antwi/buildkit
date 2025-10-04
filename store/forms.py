@@ -2,8 +2,28 @@ from django import forms
 from django.contrib.auth import get_user_model
 from .models import UserProfile
 import re
+from django.contrib.auth.forms import PasswordResetForm
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader
 
 User = get_user_model()
+class CustomPasswordResetForm(PasswordResetForm):
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        """
+        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+        """
+        subject = loader.render_to_string(subject_template_name, context)
+        subject = ''.join(subject.splitlines())
+        body = loader.render_to_string(email_template_name, context)
+        
+        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        
+        # Always attach HTML version - use the HTML template
+        html_email = loader.render_to_string('auth/password_reset_email.html', context)
+        email_message.attach_alternative(html_email, 'text/html')
+            
+        email_message.send()
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(

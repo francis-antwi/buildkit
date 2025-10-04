@@ -8,15 +8,27 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security settings
+# Security settings - READ FROM .ENV FILE
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = config('DEBUG', default=False, cast=bool)  # Read from .env
+
+# Handle ALLOWED_HOSTS configuration
+allowed_hosts_str = config('ALLOWED_HOSTS', default='localhost,127.0.0.1')
+# Clean the string and convert to list
+allowed_hosts_str = allowed_hosts_str.replace('[', '').replace(']', '').replace("'", "").replace('"', '')
+ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]
+
+# Add Render's external hostname
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Cloudinary Configuration
 CLOUDINARY_STORAGE = {
@@ -37,11 +49,12 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'store',
     'cart',
- 
 ]
 
+# Middleware - Add WhiteNoise for static files in production
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,26 +81,37 @@ TEMPLATES = [
         },
     },
 ]
-# Database
-import dj_database_url
 
-# Database
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
-
+# Database configuration for Render
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    # Use PostgreSQL on Render
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Cloudinary file storage
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# Static files
+# Static files configuration
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise configuration for serving static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Media files (handled by Cloudinary)
 MEDIA_URL = '/media/'
@@ -108,21 +132,34 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Security settings for production
 if not DEBUG:
+    # Production security settings
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    # Development security settings
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
-
 
 AUTHENTICATION_BACKENDS = [
     'store.auth_backend.EmailOrUsernameBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
 WHATSAPP_ADMIN_NUMBER = os.getenv('WHATSAPP_ADMIN_NUMBER')
+
+# Firebase Configuration
 FIREBASE_SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, 'buildkit-8f7bf-firebase-adminsdk-fbsvc-e63998c42c.json')
-FIREBASE_WEB_API_KEY = config('FIREBASE_WEB_API_KEY')
-FIREBASE_AUTH_DOMAIN = os.getenv('FIREBASE_AUTH_DOMAIN')  # your-project.firebaseapp.com
-FIREBASE_PROJECT_ID = os.getenv('FIREBASE_PROJECT_ID')
-FIREBASE_APP_ID = os.getenv('FIREBASE_APP_ID')
+FIREBASE_WEB_API_KEY = config('FIREBASE_WEB_API_KEY', default='')
+FIREBASE_AUTH_DOMAIN = config('FIREBASE_AUTH_DOMAIN', default='')
+FIREBASE_PROJECT_ID = config('FIREBASE_PROJECT_ID', default='')
+FIREBASE_APP_ID = config('FIREBASE_APP_ID', default='')
+FIREBASE_MESSAGING_SENDER_ID = config('FIREBASE_MESSAGING_SENDER_ID', default='')
+FIREBASE_STORAGE_BUCKET = config('FIREBASE_STORAGE_BUCKET', default='')
 
 LOGGING = {
     'version': 1,
@@ -135,22 +172,29 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
         },
     },
 }
-# Email configuration for password reset
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
-# For development - use console backend
+# Email configuration for password reset
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'buildkitconstruction@gmail.com'
+else:
+    # Production configuration - SSL on port 465 (tested and working)
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 465  # SSL port
+    EMAIL_USE_SSL = True  # Enable SSL
+    EMAIL_USE_TLS = False  # Disable TLS since we're using SSL
+    EMAIL_TIMEOUT = 30
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    DEFAULT_FROM_EMAIL = f'BuildKit <{EMAIL_HOST_USER}>'
 
-# Site information for password reset emails
+# Site information
 SITE_NAME = "BuildKit"
-DEFAULT_FROM_EMAIL = 'noreply@buildkit.com'
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
