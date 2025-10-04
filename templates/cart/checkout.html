@@ -337,7 +337,7 @@
         }
     </style>
 <section class="page-title-wrap">
-        <div class="container">
+        <divccccc class="container">
             <div class="page-title-inner">
                 <h1>Checkout</h1>
                 <ul class="breadcrumbs">
@@ -368,7 +368,7 @@
                                 <td class="product-name">
                                     <div class="product-name">
                                         {% if item.product.image %}
-                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80" height="80">
+                                            <img src="{% static '{{ item.product.image.url }}' %}" alt="{{ item.product.name }}" width="80" height="80">
                                         {% else %}
                                             <img src="https://via.placeholder.com/80x80/cccccc/666666?text={{ item.product.name|urlencode }}" alt="{{ item.product.name }}">
                                         {% endif %}
