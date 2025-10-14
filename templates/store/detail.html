@@ -502,13 +502,21 @@
 
         <div class="product-grid">
             <!-- Product Image -->
-            <div class="product-image-section">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-product-image">
-                {% else %}
-                    <img src="https://via.placeholder.com/500x400?text=No+Image" alt="{{ product.name }}" class="main-product-image">
-                {% endif %}
-            </div>
+          <div class="product-image-section">
+    {% if product.image %}
+        <img src="{{ product.image.url }}" 
+             alt="{{ product.name }}" 
+             class="main-product-image"
+             data-bs-toggle="modal" 
+             data-bs-target="#imageModal"
+             style="cursor: zoom-in;">
+    {% else %}
+        <img src="https://via.placeholder.com/500x400?text=No+Image" 
+             alt="{{ product.name }}" 
+             class="main-product-image"
+             style="cursor: default;">
+    {% endif %}
+</div>
 
             <!-- Product Info -->
             <div class="product-info-section">
