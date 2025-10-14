@@ -440,6 +440,10 @@
             height: 200px;
         }
     }
+    .pagination-ellipsis {
+    padding: 8px 5px;
+    color: #666;
+}
 </style>
 
 <!-- Page Title Section -->
@@ -544,24 +548,80 @@
                     {% endfor %}
                 </div>
                 
-                <!-- Pagination -->
-                {% if products.has_other_pages %}
-                <div class="pagination">
-                    {% if products.has_previous %}
-                        <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">Previous</a>
-                    {% endif %}
-                    {% for num in products.paginator.page_range %}
+            <!-- Pagination -->
+{% if products.has_other_pages %}
+<div class="pagination">
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">Previous</a>
+    {% endif %}
+    
+    {% comment %} Calculate the page range to display {% endcomment %}
+    {% with current_page=products.number total_pages=products.paginator.num_pages %}
+        {% comment %} Determine the start and end of the page range {% endcomment %}
+        {% if total_pages <= 10 %}
+            {% comment %} Show all pages if there are 10 or fewer {% endcomment %}
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="active">{{ num }}</a>
+                {% else %}
+                    <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% comment %} Show only 10 pages at a time {% endcomment %}
+            {% comment %} Calculate which 10 pages to show {% endcomment %}
+            {% if current_page <= 6 %}
+                {% comment %} Show pages 1-10 {% endcomment %}
+                {% for num in products.paginator.page_range %}
+                    {% if num <= 10 %}
                         {% if products.number == num %}
                             <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="active">{{ num }}</a>
                         {% else %}
                             <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">{{ num }}</a>
                         {% endif %}
-                    {% endfor %}
-                    {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">Next</a>
                     {% endif %}
-                </div>
+                {% endfor %}
+                {% if total_pages > 10 %}
+                    <span class="pagination-ellipsis">...</span>
+                    <a href="?page={{ total_pages }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">{{ total_pages }}</a>
                 {% endif %}
+            {% elif current_page >= total_pages|add:"-5" %}
+                {% comment %} Show last 10 pages {% endcomment %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">1</a>
+                <span class="pagination-ellipsis">...</span>
+                {% for num in products.paginator.page_range %}
+                    {% if num >= total_pages|add:"-9" %}
+                        {% if products.number == num %}
+                            <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="active">{{ num }}</a>
+                        {% else %}
+                            <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">{{ num }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% comment %} Show pages around current page {% endcomment %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">1</a>
+                <span class="pagination-ellipsis">...</span>
+                {% for num in products.paginator.page_range %}
+                    {% if num >= current_page|add:"-4" and num <= current_page|add:"5" %}
+                        {% if products.number == num %}
+                            <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}" class="active">{{ num }}</a>
+                        {% else %}
+                            <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">{{ num }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <span class="pagination-ellipsis">...</span>
+                <a href="?page={{ total_pages }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">{{ total_pages }}</a>
+            {% endif %}
+        {% endif %}
+    {% endwith %}
+    
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category.slug }}{% endif %}">Next</a>
+    {% endif %}
+</div>
+{% endif %}
             </div>
             
             <div class="col-md-3">
@@ -772,6 +832,17 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.remove();
         }, 3000);
     }
+});
+// If you want to add AJAX-based pagination
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for pagination links if you want AJAX loading
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Optional: Add AJAX loading here if desired
+            // e.preventDefault();
+            // loadPage(this.href);
+        });
+    });
 });
 </script>
 {% endblock %}

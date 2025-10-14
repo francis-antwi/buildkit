@@ -73,84 +73,76 @@
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="section services-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>What We Offer</h2>
-                <p>Always Dedicated and Devoted</p>
-            </div>
-            <div class="row">
-                {% for category in featured_categories %}
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="{{ category.icon_class|default:'fas fa-box' }}"></i>
-                        <h4>
-                            {% if category.slug %}
-                                <a href="{% url 'store:service_category' category.slug %}">
-                                    {{ category.name }}
-                                </a>
-                            {% else %}
-                                {{ category.name }}
-                            {% endif %}
-                        </h4>
-                        <p>{{ category.description|default:"High-quality products and materials for your construction needs." }}</p>
-                    </div>
-                </div>
-                {% empty %}
-                <!-- Fallback static content if no featured categories -->
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="fas fa-hammer"></i>
-                        <h4>Building Materials</h4>
-                        <p>High-quality cement, bricks, steel, and other essential building materials for your construction projects.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="fas fa-tools"></i>
-                        <h4>Construction Tools</h4>
-                        <p>Professional-grade tools and equipment for contractors and construction professionals.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="fas fa-paint-roller"></i>
-                        <h4>Finishing Materials</h4>
-                        <p>Complete range of finishing materials including paints, tiles, fixtures, and decorative elements.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="fas fa-faucet"></i>
-                        <h4>Plumbing Supplies</h4>
-                        <p>Comprehensive plumbing solutions including pipes, fittings, fixtures, and water management systems.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="fas fa-bolt"></i>
-                        <h4>Electrical Supplies</h4>
-                        <p>Complete electrical solutions with wires, switches, panels, and energy-efficient lighting systems.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="service-box">
-                        <i class="fas fa-home"></i>
-                        <h4>Roofing Materials</h4>
-                        <p>Durable roofing solutions including sheets, tiles, insulation, and weatherproofing materials.</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
-            {% if featured_categories %}
-            <div class="text-center mt-4">
-                <a href="{% url 'store:product_list' %}" class="btn btn-primary">View All Categories</a>
-            </div>
-            {% endif %}
+<!-- Services Section -->
+<section id="services" class="section services-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>What We Offer</h2>
+            <p>Always Dedicated and Devoted</p>
         </div>
-    </section>
+
+        <div class="row">
+    {% for category in featured_categories %}
+        <div class="col-md-4 mb-4">
+            <div class="service-box card h-100 shadow-sm hover-shadow transition-all">
+                <div class="card-body text-center p-4">
+                    <!-- Dynamic Icon -->
+                    <div class="icon-wrapper mb-3">
+                        <i class="{{ category.icon_class|default:'fas fa-tools' }} fa-3x text-{{ category.color_class|default:'primary' }}"></i>
+                    </div>
+                    
+                    <!-- Category Name with Link -->
+                    <h5 class="card-title mb-3">
+                        {% if category.slug %}
+                            <a href="{% url 'store:product_list_by_category' category.slug %}" 
+                               class="text-decoration-none text-dark hover-text-primary">
+                                {{ category.name }}
+                            </a>
+                        {% else %}
+                            {{ category.name }}
+                        {% endif %}
+                    </h5>
+                    
+                    <!-- Category Description -->
+                    <p class="card-text text-muted mb-3">
+                        {{ category.description|default:"High-quality products and materials for your construction needs."|truncatewords:15 }}
+                    </p>
+                    
+                    <!-- Product Count Badge -->
+                    {% if category.product_count %}
+                        <div class="mt-auto">
+                            <span class="badge bg-{{ category.color_class|default:'primary' }} rounded-pill">
+                                {{ category.product_count }} product{{ category.product_count|pluralize }}
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <!-- Enhanced Fallback -->
+        <div class="col-12 text-center py-5">
+            <div class="empty-state">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No Categories Available</h4>
+                <p class="text-muted">Categories will appear here once they are added to the system.</p>
+                <a href="{% url 'admin:index' %}" class="btn btn-primary mt-2">
+                    <i class="fas fa-cog me-1"></i> Manage Categories
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% if featured_categories %}
+    <div class="text-center mt-5">
+        <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg px-5">
+            <i class="fas fa-th-large me-2"></i>View All Categories
+        </a>
+    </div>
+{% endif %}
+</section>
+
 
     <!-- Testimonials Section -->
     <section id="testimonials" class="section testimonials-section">

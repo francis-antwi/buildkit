@@ -28,7 +28,7 @@ def index(request):
     # Get ALL service categories (remove featured filter)
     service_categories = Category.objects.filter(
         service_type__isnull=False
-    ).exclude(service_type='').order_by('display_order', 'name')[:6]
+    ).exclude(service_type='').order_by('display_order', 'name')[:50]
     
     # DEBUG: Print what's actually being returned
     print("🔍 DEBUG - Service categories in index view:")
@@ -140,8 +140,8 @@ def add_review(request, product_id):
 
 def store(request):
     featured_products = Product.objects.filter(available=True)[:8]
-    building_materials = Product.objects.filter(product_type='material', available=True)[:6]
-    construction_tools = Product.objects.filter(product_type='tool', available=True)[:6]
+    building_materials = Product.objects.filter(product_type='material', available=True)[:50]
+    construction_tools = Product.objects.filter(product_type='tool', available=True)[:50]
     categories = Category.objects.all()
     top_rated_products = Product.objects.filter(
         testimonials__approved=True
