@@ -495,7 +495,11 @@
                                     {% endif %}
                                     <div class="product-name-wrap">
                                         <div class="product-name-inner">
-                                            <a href="{% url 'store:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                                            {% if item.product.slug %}
+    <a href="{% url 'store:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+{% else %}
+    <span class="product-name-no-link">{{ item.product.name }}</span>
+{% endif %}
                                         </div>
                                     </div>
                                 </div>
