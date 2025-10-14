@@ -517,21 +517,6 @@
              style="cursor: default;">
     {% endif %}
 </div>
-<div class="product-image-section">
-    {% if product.image %}
-        <img src="{{ product.image.url }}" 
-             alt="{{ product.name }}" 
-             class="main-product-image"
-             data-bs-toggle="modal" 
-             data-bs-target="#imageModal"
-             style="cursor: zoom-in;">
-    {% else %}
-        <img src="https://via.placeholder.com/500x400?text=No+Image" 
-             alt="{{ product.name }}" 
-             class="main-product-image"
-             style="cursor: default;">
-    {% endif %}
-</div>
 
 <!-- Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -550,6 +535,7 @@
         </div>
     </div>
 </div>
+
             <!-- Product Info -->
             <div class="product-info-section">
                 <h1 class="product-title">{{ product.name }}</h1>
