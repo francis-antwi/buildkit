@@ -1,0 +1,495 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Construction Supplies{% endblock %}
+
+{% block content %}
+<div class="service-category-page">
+    <!-- Hero Section -->
+    <section class="category-hero bg-gradient-primary text-white py-5">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb breadcrumb-light">
+                    <li class="breadcrumb-item"><a href="{% url 'store:index' %}" class="text-white-50">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'store:index' %}#services" class="text-white-50">Services</a></li>
+                    <li class="breadcrumb-item active text-white">{{ category.name }}</li>
+                </ol>
+            </nav>
+
+            <!-- Header Content -->
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <span class="badge bg-white text-{{ color }} mb-3 px-3 py-2 rounded-pill">
+                            <i class="fas {{ icon }} me-2"></i>Service Category
+                        </span>
+                        <h1 class="display-4 fw-bold mb-3">{{ category.name }}</h1>
+                        {% if category.description %}
+                        <p class="lead mb-4 opacity-90">{{ category.description }}</p>
+                        {% endif %}
+                        <div class="hero-stats">
+                            <div class="d-flex flex-wrap gap-4">
+                                <div class="stat-item">
+                                    <h3 class="fw-bold mb-0">{{ products.count }}</h3>
+                                    <small class="opacity-90">Products Available</small>
+                                </div>
+                                <div class="stat-item">
+                                    <h3 class="fw-bold mb-0">{{ product_types|length }}</h3>
+                                    <small class="opacity-90">Product Types</small>
+                                </div>
+                                {% if featured_products %}
+                                <div class="stat-item">
+                                    <h3 class="fw-bold mb-0">{{ featured_products|length }}</h3>
+                                    <small class="opacity-90">Featured Items</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="hero-icon">
+                        <i class="fas {{ icon }} display-1 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <!-- Quick Actions -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="quick-actions-card card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title mb-2">Ready to explore {{ category.name }}?</h5>
+                                <p class="card-text text-muted mb-0">
+                                    Browse our complete collection of {{ products.count }} quality products
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="btn-group-vertical btn-group-sm w-100 w-md-auto">
+                                    <a href="{% url 'store:product_list_by_category' category.slug %}" 
+                                       class="btn btn-{{ btn_color }} mb-2">
+                                        <i class="fas fa-list me-2"></i>View All Products
+                                    </a>
+                                    <a href="{% url 'store:index' %}#services" 
+                                       class="btn btn-outline-{{ btn_color }}">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Services
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <section class="products-section mb-5">
+            <div class="section-header mb-4">
+                <h2 class="h3 mb-2">Available Products</h2>
+                <p class="text-muted">Quality {{ category.name|lower }} for your construction needs</p>
+            </div>
+
+            {% if products %}
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card product-card h-100 border-0 shadow-sm">
+                        <!-- Product Image -->
+                        <div class="product-image-container position-relative">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" 
+                                 style="height: 200px; object-fit: cover;">
+                            {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas {{ icon }} fa-3x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Product Type Badge -->
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-{{ color }} bg-opacity-90 text-white">
+                                    {{ product.get_product_type_display }}
+                                </span>
+                            </div>
+                            
+                            <!-- Stock Status Badge -->
+                            <div class="position-absolute top-0 end-0 m-3">
+                                {% if product.is_in_stock %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>In Stock
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times me-1"></i>Out of Stock
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Featured Badge -->
+                            {% if product.featured %}
+                            <div class="position-absolute bottom-0 start-0 m-3">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-star me-1"></i>Featured
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-dark mb-2">{{ product.name }}</h5>
+                            <p class="card-text text-muted flex-grow-1">{{ product.description|truncatewords:15 }}</p>
+                            
+                            <!-- Price and Stock -->
+                            <div class="product-meta mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 text-primary mb-0">₵{{ product.price }}</span>
+                                    {% if product.is_in_stock %}
+                                    <small class="text-muted">{{ product.stock }} available</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons - SIMPLIFIED FIX -->
+                            <div class="product-actions mt-auto">
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'store:product_detail' product.slug %}" 
+                                       class="btn btn-outline-{{ btn_color }}">
+                                        <i class="fas fa-eye me-2"></i>View Details
+                                    </a>
+                                    {% if product.is_in_stock %}
+                                    <form action="{% url 'cart:cart_add' product.id %}" method="post" class="d-grid">
+                                        {% csrf_token %}
+                                        <!-- SIMPLE HIDDEN FIELDS - NO TEMPLATE FILTER NEEDED -->
+                                        <input type="hidden" name="quantity" value="1">
+                                        <input type="hidden" name="override" value="false">
+                                        <button type="submit" class="btn btn-{{ btn_color }}">
+                                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <button class="btn btn-secondary" disabled>
+                                        <i class="fas fa-times me-2"></i>Out of Stock
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination (if needed) -->
+            {% if products.paginator %}
+            <nav aria-label="Products pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in products.paginator.page_range %}
+                    <li class="page-item {% if products.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No Products Available</h3>
+                    <p class="text-muted mb-4">We're currently updating our inventory for {{ category.name|lower }}.</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'store:index' %}#services" class="btn btn-outline-{{ btn_color }}">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Services
+                        </a>
+                        <a href="{% url 'store:product_list' %}" class="btn btn-{{ btn_color }}">
+                            <i class="fas fa-store me-2"></i>Browse All Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Product Types Distribution -->
+        {% if product_types %}
+        <section class="product-types-section mb-5">
+            <div class="section-header mb-4">
+                <h2 class="h3 mb-2">Product Types</h2>
+                <p class="text-muted">Distribution of {{ category.name|lower }} by type</p>
+            </div>
+            <div class="row">
+                {% for type in product_types %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-capitalize">{{ type.product_type }}</span>
+                                <span class="badge bg-{{ color }}">{{ type.count }} items</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Featured Products -->
+        {% if featured_products %}
+        <section class="featured-products-section mb-5">
+            <div class="section-header mb-4">
+                <h2 class="h3 mb-2">Featured Products</h2>
+                <p class="text-muted">Top picks from our {{ category.name|lower }} collection</p>
+            </div>
+            <div class="row g-4">
+                {% for product in featured_products %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card featured-product-card border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" class="rounded-circle mb-3" alt="{{ product.name }}" 
+                                 style="width: 80px; height: 80px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3"
+                                 style="width: 80px; height: 80px;">
+                                <i class="fas {{ icon }} text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <h6 class="card-title mb-2">{{ product.name }}</h6>
+                            <p class="text-primary fw-bold mb-2">₵{{ product.price }}</p>
+                            <a href="{% url 'store:product_detail' product.slug %}" class="btn btn-sm btn-outline-{{ btn_color }}">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Related Categories -->
+        {% if related_categories %}
+        <section class="related-categories mb-5">
+            <div class="section-header mb-4">
+                <h2 class="h3 mb-2">Related Categories</h2>
+                <p class="text-muted">Explore other construction service categories</p>
+            </div>
+            <div class="row g-3">
+                {% for related_category in related_categories %}
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ related_category.get_service_category_url }}" 
+                       class="category-link-card card text-decoration-none h-100 border-0 shadow-sm-hover">
+                        <div class="card-body text-center p-4">
+                            <i class="fas {{ related_category.icon_class|default:'fa-box' }} fa-2x text-{{ related_category.color_class|default:'primary' }} mb-3"></i>
+                            <h6 class="card-title text-dark mb-2">{{ related_category.name }}</h6>
+                            <small class="text-muted">{{ related_category.product_count }} products</small>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Call to Action -->
+        <section class="cta-section mb-5">
+            <div class="card bg-{{ color }} text-white border-0 shadow">
+                <div class="card-body p-5 text-center">
+                    <h3 class="card-title mb-3">Need Professional Advice?</h3>
+                    <p class="card-text mb-4 opacity-90">
+                        Our construction experts are here to help you choose the right {{ category.name|lower }} for your project.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="tel:+233544542606" class="btn btn-light btn-lg">
+                            <i class="fas fa-phone me-2"></i>Call Now
+                        </a>
+                        <a href="{% url 'store:index' %}#contact" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-envelope me-2"></i>Get in Touch
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+.service-category-page {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.category-hero {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+}
+
+.breadcrumb-light .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255,255,255,0.5);
+}
+
+.hero-stats .stat-item {
+    text-align: center;
+    padding: 0.5rem 1rem;
+}
+
+.product-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    border-color: var(--bs-primary);
+}
+
+.featured-product-card {
+    transition: all 0.3s ease;
+}
+
+.featured-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.product-image-container {
+    overflow: hidden;
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.product-image-container img {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image-container img {
+    transform: scale(1.05);
+}
+
+.category-link-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.category-link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.quick-actions-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-left: 4px solid var(--bs-primary) !important;
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.shadow-sm-hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.3s ease;
+}
+
+.shadow-sm-hover:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .category-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-stats .d-flex {
+        justify-content: center;
+        gap: 1rem !important;
+    }
+    
+    .stat-item {
+        flex: 0 0 calc(50% - 0.5rem);
+    }
+    
+    .quick-actions-card .text-md-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+    
+    .btn-group-vertical {
+        width: 100% !important;
+    }
+    
+    .product-card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Animation for product cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.product-card {
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4) { animation-delay: 0.4s; }
+.product-card:nth-child(5) { animation-delay: 0.5s; }
+.product-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}

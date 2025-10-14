@@ -12,35 +12,27 @@ class UserProfile(models.Model):
     phone_number = models.CharField(
         max_length=13,
         unique=True,
-        null=True,       # allow NULL in DB
-        blank=True,      # allow empty form field
+        null=True,
+        blank=True,
         help_text="Enter phone number in format +1234567890"
     )
 
     def clean(self):
         """Validate phone number format"""
         if self.phone_number and self.phone_number.strip():
-            # Remove any whitespace
             self.phone_number = self.phone_number.strip()
-            
-            # Basic validation for international format
             if not re.match(r'^\+\d{1,3}\d{6,12}$', self.phone_number):
                 raise ValidationError({
                     'phone_number': 'Phone number must be in international format (e.g., +233598670304)'
                 })
         else:
-            # If empty or whitespace only, set to None
             self.phone_number = None
 
     def save(self, *args, **kwargs):
-        # Convert empty strings and whitespace to None to avoid unique constraint issues
         if not self.phone_number or self.phone_number.strip() == '':
             self.phone_number = None
         else:
-            # Clean up whitespace
             self.phone_number = self.phone_number.strip()
-        
-        # Run model validation
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -53,22 +45,74 @@ class UserProfile(models.Model):
 
 
 class Category(models.Model):
+    SERVICE_CATEGORIES = [
+        ('building-materials', 'Building Materials'),
+        ('construction-tools', 'Construction Tools'),
+        ('finishing-materials', 'Finishing Materials'),
+        ('plumbing-supplies', 'Plumbing Supplies'),
+        ('electrical-supplies', 'Electrical Supplies'),
+        ('roofing-materials', 'Roofing Materials'),
+    ]
+    
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(unique=True, help_text="URL-friendly version of the name")
+    slug = models.SlugField(
+        unique=True, 
+        help_text="URL-friendly version of the name (e.g., 'building-materials')"
+    )
+    service_type = models.CharField(
+        max_length=50, 
+        choices=SERVICE_CATEGORIES,
+        blank=True,
+        help_text="Select if this is one of the main service categories"
+    )
     description = models.TextField(blank=True)
     image = CloudinaryField('category_image', folder='buildkit/categories/', blank=True, null=True)
+    icon_class = models.CharField(
+        max_length=50, 
+        default='fas fa-box',
+        help_text="Font Awesome icon class (e.g., 'fas fa-hammer')"
+    )
+    color_class = models.CharField(
+        max_length=20,
+        default='primary',
+        help_text="Bootstrap color class (e.g., 'primary', 'warning', 'info')"
+    )
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text="Order in which categories are displayed (lower numbers first)"
+    )
+    featured = models.BooleanField(
+        default=False,
+        help_text="Display this category in featured sections"
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Categories"
-        ordering = ['name']
+        ordering = ['display_order', 'name']
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('store:category_detail', args=[self.slug])
+        return reverse('store:service_category', args=[self.slug])
+    
+    def get_service_category_url(self):
+        """Get URL for service category pages"""
+        if self.service_type:
+            return reverse('store:service_category', args=[self.slug])
+        return reverse('store:product_list_by_category', args=[self.slug])
+    
+    @property
+    def product_count(self):
+        """Return count of available products in this category"""
+        return self.products.filter(available=True).count()
+    
+    @property
+    def is_service_category(self):
+        """Check if this is a main service category"""
+        return bool(self.service_type)
 
 
 class Product(models.Model):
@@ -76,6 +120,10 @@ class Product(models.Model):
         ('material', 'Building Material'),
         ('tool', 'Construction Tool'),
         ('safety', 'Safety Equipment'),
+        ('plumbing', 'Plumbing Item'),
+        ('electrical', 'Electrical Item'),
+        ('finishing', 'Finishing Material'),
+        ('roofing', 'Roofing Material'),
     ]
 
     name = models.CharField(max_length=200)
@@ -87,14 +135,23 @@ class Product(models.Model):
     image = CloudinaryField('product_image', folder='buildkit/products/')
     stock = models.PositiveIntegerField(default=0)
     available = models.BooleanField(default=True)
+    featured = models.BooleanField(
+        default=False,
+        help_text="Feature this product on the homepage"
+    )
+    apply_price_increase = models.BooleanField(
+        default=False,
+        help_text="Apply 10% price increase when saving this product"
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created']
+        ordering = ['-featured', '-created']
         indexes = [
             models.Index(fields=['category', 'available']),
             models.Index(fields=['product_type', 'available']),
+            models.Index(fields=['featured', 'available']),
         ]
 
     def __str__(self):
@@ -107,17 +164,62 @@ class Product(models.Model):
         """Validate product data"""
         if self.price <= 0:
             raise ValidationError({'price': 'Price must be greater than zero'})
-        
         if self.stock < 0:
             raise ValidationError({'stock': 'Stock cannot be negative'})
 
     def save(self, *args, **kwargs):
+        # Apply 10% price increase if the option is selected
+        if self.apply_price_increase and self.price:
+            self.price = self.price * Decimal('1.10')
+            # Reset the flag so it doesn't apply again on next save
+            self.apply_price_increase = False
+        
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def apply_ten_percent_increase(self):
+        """Method to manually apply 10% price increase"""
+        if self.price:
+            self.price = self.price * Decimal('1.10')
+            self.save()
+
+    @property
+    def price_with_increase(self):
+        """Get the price with 10% increase without saving"""
+        if self.price:
+            return self.price * Decimal('1.10')
+        return self.price
 
     @property
     def is_in_stock(self):
         return self.stock > 0 and self.available
+    
+    @property
+    def low_stock(self):
+        """Check if product has low stock (less than 10 items)"""
+        return 0 < self.stock <= 10
+    
+    @property
+    def stock_status(self):
+        """Get stock status for display"""
+        if not self.available:
+            return "Unavailable"
+        elif self.stock == 0:
+            return "Out of Stock"
+        elif self.low_stock:
+            return f"Low Stock ({self.stock})"
+        else:
+            return f"In Stock ({self.stock})"
+    
+    @property
+    def stock_status_class(self):
+        """Get Bootstrap class for stock status"""
+        if not self.available or self.stock == 0:
+            return "danger"
+        elif self.low_stock:
+            return "warning"
+        else:
+            return "success"
 
 
 class ProductImage(models.Model):
@@ -125,17 +227,28 @@ class ProductImage(models.Model):
     image = CloudinaryField('product_gallery', folder='buildkit/products/gallery/')
     alt_text = models.CharField(max_length=100, blank=True, help_text="Alternative text for accessibility")
     is_primary = models.BooleanField(default=False, help_text="Use as main product image")
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text="Order in which images are displayed"
+    )
 
     class Meta:
-        ordering = ['-is_primary', 'id']
+        ordering = ['-is_primary', 'display_order', 'id']
 
     def __str__(self):
         return f"Image for {self.product.name}"
 
     def save(self, *args, **kwargs):
-        # Auto-generate alt_text if not provided
         if not self.alt_text:
             self.alt_text = f"Image of {self.product.name}"
+        
+        # Ensure only one primary image per product
+        if self.is_primary:
+            ProductImage.objects.filter(
+                product=self.product, 
+                is_primary=True
+            ).exclude(pk=self.pk).update(is_primary=False)
+        
         super().save(*args, **kwargs)
 
 
@@ -150,19 +263,21 @@ class Testimonial(models.Model):
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
+    featured = models.BooleanField(
+        default=False,
+        help_text="Feature this testimonial on product pages"
+    )
 
     class Meta:
-        ordering = ['-created']
-        unique_together = ['product', 'user']  # Prevent duplicate reviews from same user
+        ordering = ['-featured', '-created']
+        unique_together = ['product', 'user']
 
     def __str__(self):
         return f"Testimonial for {self.product.name} by {self.reviewer_name}"
 
     def clean(self):
-        """Validate testimonial data"""
         if self.rating < 1 or self.rating > 5:
             raise ValidationError({'rating': 'Rating must be between 1 and 5'})
-        
         if len(self.content.strip()) < 10:
             raise ValidationError({'content': 'Review must be at least 10 characters long'})
 
@@ -174,6 +289,7 @@ class Testimonial(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
         ('processing', 'Processing'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
@@ -183,6 +299,7 @@ class Order(models.Model):
     DELIVERY_METHODS = [
         ('free', 'Free Delivery'),
         ('flat', 'Flat Rate Delivery'),
+        ('express', 'Express Delivery'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -200,33 +317,48 @@ class Order(models.Model):
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    notes = models.TextField(blank=True, help_text="Additional order notes")
 
     class Meta:
         ordering = ['-created']
         indexes = [
             models.Index(fields=['user', 'created']),
             models.Index(fields=['status', 'created']),
+            models.Index(fields=['paid', 'created']),
         ]
 
     def __str__(self):
-        return f'Order {self.id}'
+        return f'Order {self.id} - {self.full_name}'
 
     def get_total_cost(self):
-        """Calculate total order cost including delivery"""
         items_total = sum(item.get_cost() for item in self.items.all())
-        total = items_total + self.delivery_cost
-        return total
+        return items_total + self.delivery_cost
 
     def get_total_cost_display(self):
-        """Get formatted total cost"""
-        return f"${self.get_total_cost():.2f}"
+        return f"₵{self.get_total_cost():.2f}"
 
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    @property
+    def items_count(self):
+        return sum(item.quantity for item in self.items.all())
+    
+    @property
+    def status_class(self):
+        """Get Bootstrap class for order status"""
+        status_classes = {
+            'pending': 'warning',
+            'confirmed': 'info',
+            'processing': 'primary',
+            'shipped': 'success',
+            'delivered': 'dark',
+            'cancelled': 'danger',
+        }
+        return status_classes.get(self.status, 'secondary')
 
     def clean(self):
-        """Validate order data"""
         if self.delivery_cost < 0:
             raise ValidationError({'delivery_cost': 'Delivery cost cannot be negative'})
 
@@ -242,31 +374,26 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     
     class Meta:
-        unique_together = ['order', 'product']  # Prevent duplicate items in same order
+        unique_together = ['order', 'product']
 
     def __str__(self):
         return f'{self.quantity} x {self.product.name} (Order {self.order.id})'
     
     def get_cost(self):
-        """Calculate total cost for this item"""
         return self.price * self.quantity
 
     def get_cost_display(self):
-        """Get formatted cost"""
-        return f"${self.get_cost():.2f}"
+        return f"₵{self.get_cost():.2f}"
 
     def clean(self):
-        """Validate order item data"""
         if self.quantity <= 0:
             raise ValidationError({'quantity': 'Quantity must be greater than zero'})
-        
         if self.price <= 0:
             raise ValidationError({'price': 'Price must be greater than zero'})
 
     def save(self, *args, **kwargs):
-        # Set price from product if not specified
         if not self.price:
+            # Get the current product price
             self.price = self.product.price
-        
         self.full_clean()
         super().save(*args, **kwargs)

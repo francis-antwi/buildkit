@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, Count  # ADD Count here
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
@@ -25,8 +25,23 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 def index(request):
+    # Get ALL service categories (remove featured filter)
+    service_categories = Category.objects.filter(
+        service_type__isnull=False
+    ).exclude(service_type='').order_by('display_order', 'name')[:6]
+    
+    # DEBUG: Print what's actually being returned
+    print("🔍 DEBUG - Service categories in index view:")
+    for i, cat in enumerate(service_categories):
+        print(f"   {i+1}. {cat.name} (slug: {cat.slug})")
+    print(f"   Total categories found: {service_categories.count()}")
+    
+    featured_products = Product.objects.filter(featured=True, available=True)[:8]
     testimonials = Testimonial.objects.filter(approved=True).order_by('-created')[:4]
+    
     context = {
+        'featured_categories': service_categories,
+        'featured_products': featured_products,
         'testimonials': testimonials,
     }
     return render(request, 'index.html', context)
@@ -494,3 +509,47 @@ def resend_verification(request):
             
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+def service_category(request, category_slug):
+    """
+    Single view to handle all service categories using enhanced Category model
+    """
+    # Get the category by slug
+    category = get_object_or_404(Category, slug=category_slug)
+    
+    # Get products for this category with related data
+    products = Product.objects.filter(
+        category=category, 
+        available=True
+    ).select_related('category').prefetch_related('testimonials')
+    
+    # Use category's own icon and color properties, fallback to defaults
+    icon = category.icon_class if category.icon_class else 'fa-box'
+    color = category.color_class if category.color_class else 'primary'
+    btn_color = category.color_class if category.color_class else 'primary'
+    
+    # Get related categories (other service categories) - FIXED
+    related_categories = Category.objects.filter(
+        service_type__isnull=False
+    ).exclude(service_type='').exclude(slug=category_slug)[:5]
+    
+    # Get featured products from this category
+    featured_products = products.filter(featured=True)[:3]
+    
+    # Get product types distribution for this category - FIXED: Use Count instead of models.Count
+    product_types = products.values('product_type').annotate(
+        count=Count('id')  # FIXED: Use Count directly
+    ).order_by('-count')
+    
+    context = {
+        'category': category,
+        'products': products,
+        'icon': icon,
+        'color': color,
+        'btn_color': btn_color,
+        'related_categories': related_categories,
+        'featured_products': featured_products,
+        'product_types': product_types,
+        'product_count': products.count(),
+    }
+    
+    return render(request, 'services/service_category.html', context)

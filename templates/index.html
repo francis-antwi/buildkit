@@ -15,6 +15,7 @@
             </div>
         </div>
     </section>
+
     <!-- About Section -->
     <section id="about" class="section about-section">
         <div class="container">
@@ -35,6 +36,7 @@
             </div>
         </div>
     </section>
+
     <!-- Process Section -->
     <section class="section process-section">
         <div class="container">
@@ -56,7 +58,7 @@
                 <div class="col-md-3">
                     <div class="process-item">
                         <h3>03 <i class="fa fa-long-arrow-right"></i></h3>
-                        <h4><a href="#">Supply</a></h4>
+                        <h4><a href="">Supply</a></h4>
                         <p>We ensure timely delivery of materials to your construction site, maintaining quality standards.</p>
                     </div>
                 </div>
@@ -70,6 +72,7 @@
             </div>
         </div>
     </section>
+
     <!-- Services Section -->
     <section id="services" class="section services-section">
         <div class="container">
@@ -78,155 +81,77 @@
                 <p>Always Dedicated and Devoted</p>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                {% for category in featured_categories %}
+                <div class="col-md-4 mb-4">
+                    <div class="service-box">
+                        <i class="{{ category.icon_class|default:'fas fa-box' }}"></i>
+                        <h4>
+                            {% if category.slug %}
+                                <a href="{% url 'store:service_category' category.slug %}">
+                                    {{ category.name }}
+                                </a>
+                            {% else %}
+                                {{ category.name }}
+                            {% endif %}
+                        </h4>
+                        <p>{{ category.description|default:"High-quality products and materials for your construction needs." }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <!-- Fallback static content if no featured categories -->
+                <div class="col-md-4 mb-4">
                     <div class="service-box">
                         <i class="fas fa-hammer"></i>
-                        <h4><a href="#">Building Materials</a></h4>
+                        <h4>Building Materials</h4>
                         <p>High-quality cement, bricks, steel, and other essential building materials for your construction projects.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="service-box">
-                        <i class="fas fa-hard-hat"></i>
-                        <h4><a href="#">Construction Tools</a></h4>
+                        <i class="fas fa-tools"></i>
+                        <h4>Construction Tools</h4>
                         <p>Professional-grade tools and equipment for contractors and construction professionals.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="service-box">
                         <i class="fas fa-paint-roller"></i>
-                        <h4><a href="#">Finishing Materials</a></h4>
+                        <h4>Finishing Materials</h4>
                         <p>Complete range of finishing materials including paints, tiles, fixtures, and decorative elements.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="service-box">
-                        <i class="fas fa-wrench"></i>
-                        <h4><a href="#">Plumbing Supplies</a></h4>
+                        <i class="fas fa-faucet"></i>
+                        <h4>Plumbing Supplies</h4>
                         <p>Comprehensive plumbing solutions including pipes, fittings, fixtures, and water management systems.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="service-box">
                         <i class="fas fa-bolt"></i>
-                        <h4><a href="#">Electrical Supplies</a></h4>
+                        <h4>Electrical Supplies</h4>
                         <p>Complete electrical solutions with wires, switches, panels, and energy-efficient lighting systems.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="service-box">
                         <i class="fas fa-home"></i>
-                        <h4><a href="#">Roofing Materials</a></h4>
+                        <h4>Roofing Materials</h4>
                         <p>Durable roofing solutions including sheets, tiles, insulation, and weatherproofing materials.</p>
                     </div>
                 </div>
+                {% endfor %}
             </div>
+            
+            {% if featured_categories %}
+            <div class="text-center mt-4">
+                <a href="{% url 'store:product_list' %}" class="btn btn-primary">View All Categories</a>
+            </div>
+            {% endif %}
         </div>
     </section>
-    <!-- Products Section -->
-    <section id="products" class="section products-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Our Products</h2>
-                <p>Explore Our Wide Range of Building Materials and Tools</p>
-            </div>
-            <!-- Tabs Navigation -->
-            <ul class="nav nav-tabs justify-content-center mb-5" id="productsTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="materials-tab" data-bs-toggle="tab" data-bs-target="#materials" type="button" role="tab" aria-controls="materials" aria-selected="true">Building Materials</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tools-tab" data-bs-toggle="tab" data-bs-target="#tools" type="button" role="tab" aria-controls="tools" aria-selected="false">Construction Tools</button>
-                </li>
-            </ul>
-            <!-- Tab Content -->
-            <div class="tab-content" id="productsTabContent">
-                <!-- Building Materials Tab -->
-                <div class="tab-pane fade show active" id="materials" role="tabpanel" aria-labelledby="materials-tab">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="service-box fade-in-up">
-                                <i class="fas fa-cubes"></i>
-                                <h4>Building Materials</h4>
-                                <ul class="list-unstyled">
-                                    <li>Bricks</li>
-                                    <li>Blocks</li>
-                                    <li>Roofing materials (shingles, tiles, etc.)</li>
-                                    <li>Insulation materials</li>
-                                    <li>Drywall</li>
-                                    <li>Plywood</li>
-                                    <li>Steel (beams, pipes, etc.)</li>
-                                    <li>Paints and coatings</li>
-                                    <li>Flooring materials (tiles, hardwood, etc.)</li>
-                                    <li>Electrical materials (wires, outlets, etc.)</li>
-                                    <li>Plumbing materials (pipes, fixtures, etc.)</li>
-                                    <li>Glazing materials (glass, acrylic, etc.)</li>
-                                    <li>Ceramic tiles</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Construction Tools Tab -->
-                <div class="tab-pane fade" id="tools" role="tabpanel" aria-labelledby="tools-tab">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="service-box fade-in-up">
-                                <i class="fas fa-tools"></i>
-                                <h4>Power Tools</h4>
-                                <ul class="list-unstyled">
-                                    <li>Drills</li>
-                                    <li>Saws</li>
-                                    <li>Sanders</li>
-                                    <li>Grinders</li>
-                                    <li>Impact drivers</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="service-box fade-in-up">
-                                <i class="fas fa-wrench"></i>
-                                <h4>Hand Tools</h4>
-                                <ul class="list-unstyled">
-                                    <li>Hammers</li>
-                                    <li>Trowels</li>
-                                    <li>Levels</li>
-                                    <li>Tape measures</li>
-                                    <li>Pliers</li>
-                                    <li>Screwdrivers</li>
-                                    <li>Wrenches</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="service-box fade-in-up">
-                                <i class="fas fa-hard-hat"></i>
-                                <h4>Safety Equipment</h4>
-                                <ul class="list-unstyled">
-                                    <li>Hard hats</li>
-                                    <li>Safety glasses</li>
-                                    <li>Gloves</li>
-                                    <li>Steel-toed boots</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="service-box fade-in-up">
-                                <i class="fas fa-trowel"></i>
-                                <h4>Masonry Tools</h4>
-                                <ul class="list-unstyled">
-                                    <li>Trowels</li>
-                                    <li>Levels</li>
-                                    <li>String and stakes</li>
-                                    <li>Masonry saws</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+
     <!-- Testimonials Section -->
     <section id="testimonials" class="section testimonials-section">
         <div class="container">
@@ -236,70 +161,82 @@
             </div>
             <div class="row">
                 {% for testimonial in testimonials %}
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-4">
                         <div class="testimonial-card fade-in-up">
                             <div class="testimonial-text">"{{ testimonial.content }}"</div>
                             <div class="testimonial-author">
                                 <div class="author-info">
                                     <h6>{{ testimonial.reviewer_name }}</h6>
                                     <span>Rating: {{ testimonial.rating }}/5</span>
+                                    {% if testimonial.product %}
                                     <p><em>Reviewing {{ testimonial.product.name }}</em></p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 {% empty %}
-                    <div class="col-12">
-                        <p>No testimonials available at the moment.</p>
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No testimonials available at the moment.</p>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </section>
+
     <!-- Contact Section -->
-    <section id="contact" class="section">
+    <section id="contact" class="section contact-section">
         <div class="container">
             <div class="section-header">
                 <h2>Contact Us</h2>
                 <p>Get in Touch for Your Construction Needs</p>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8 mx-auto">
                     <form id="contactForm">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
+                            <label for="name" class="form-label">Name *</label>
                             <input type="text" class="form-control" id="name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
+                            <label for="email" class="form-label">Email *</label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="message" class="form-label">Message</label>
-                            <textarea class="form-control" id="message" rows="5" required></textarea>
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone">
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message *</label>
+                            <textarea class="form-control" id="message" rows="5" required placeholder="Tell us about your project or inquiry..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fab fa-whatsapp me-2"></i>Send via WhatsApp
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </section>
-
 </main>
 
-    <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            
-            const whatsappMessage = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
-            const phoneNumber = "+233544542606"; // Replace with your WhatsApp number
-            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-            
-            window.open(whatsappURL, '_blank');
-        });
-    </script>
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const message = document.getElementById('message').value;
+        
+        const whatsappMessage = `New Inquiry from Build Kit Website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nMessage: ${message}`;
+        const phoneNumber = "+233544542606"; // Replace with your WhatsApp number
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+        
+        window.open(whatsappURL, '_blank');
+        
+      
+        this.reset();
+    });
+</script>
 {% endblock %}

@@ -266,8 +266,8 @@ def checkout_whatsapp(request):
         
         message_parts.append(f"Product: {product_name}")
         message_parts.append(f"Quantity: {quantity}")
-        message_parts.append(f"Price: GHS {price:.2f}")
-        message_parts.append(f"Total: GHS {total_price:.2f}")
+        message_parts.append(f"Price: GH₵ {price:.2f}")
+        message_parts.append(f"Total: GH₵ {total_price:.2f}")
         message_parts.append("")
     
     message_parts.append("--- Cart Totals ---")
@@ -279,9 +279,9 @@ def checkout_whatsapp(request):
     order_total_raw = order.get_total_cost()
     order_total = float(order_total_raw) if isinstance(order_total_raw, Decimal) else float(order_total_raw)
     
-    message_parts.append(f"Subtotal: GHS {cart_total:.2f}")
-    message_parts.append(f"Delivery: GHS {delivery_cost:.2f}")
-    message_parts.append(f"Total: GHS {order_total:.2f}")
+    message_parts.append(f"Subtotal: GH₵ {cart_total:.2f}")
+    message_parts.append(f"Delivery: GH₵ {delivery_cost:.2f}")
+    message_parts.append(f"Total: GH₵ {order_total:.2f}")
     message_parts.append("")
     message_parts.append("--- Delivery Details ---")
     message_parts.append(f"Region: {str(region)}")

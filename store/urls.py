@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth.views import LoginView
 from . import views
 from django.contrib.auth import views as auth_views
-from .forms import CustomPasswordResetForm  # Import the custom form
+from .forms import CustomPasswordResetForm
 
 app_name = 'store'
 
@@ -18,14 +18,17 @@ urlpatterns = [
     path('resend-verification/', views.resend_verification, name='resend_verification'),
     path('register/clear/', views.clear_registration_session, name='clear_registration_session'),
     
-    # Password reset URLs - WITH CUSTOM FORM
+    # Single service category view - REPLACES ALL INDIVIDUAL SERVICE VIEWS
+    path('services/<slug:category_slug>/', views.service_category, name='service_category'),
+    
+    # Password reset URLs
     path('password-reset/', 
          auth_views.PasswordResetView.as_view(
              template_name='auth/password_reset.html',
              email_template_name='auth/password_reset_email.html',
              subject_template_name='auth/password_reset_subject.txt',
              success_url='/password-reset/done/',
-             form_class=CustomPasswordResetForm  # ADD THIS LINE
+             form_class=CustomPasswordResetForm
          ), 
          name='password_reset'),
     
