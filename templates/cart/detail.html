@@ -5,459 +5,471 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Oswald:400,700" rel="stylesheet">
 
-    <style>
-        :root {
-            --primary-color: #1e40af;
-            --primary-dark: #1e3a8a;
-            --secondary-color: #000000;
-            --text-color: #666;
-            --white: #ffffff;
-            --gray-light: #f1f1f1;
-            --shadow: 0 2px 15px rgba(0,0,0,0.1);
-            --shadow-hover: 0 10px 20px rgba(0,0,0,0.1);
-            --border-radius: 5px;
-            --transition: all 0.3s ease;
-        }
+<style>
+    :root {
+        --primary-color: #1e40af;
+        --primary-dark: #1e3a8a;
+        --secondary-color: #000000;
+        --text-color: #666;
+        --white: #ffffff;
+        --gray-light: #f1f1f1;
+        --shadow: 0 2px 15px rgba(0,0,0,0.1);
+        --shadow-hover: 0 10px 20px rgba(0,0,0,0.1);
+        --border-radius: 5px;
+        --transition: all 0.3s ease;
+    }
 
-        body {
-            font-family: 'Lato', sans-serif;
-            font-weight: 400;
-            font-size: 14px;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-            color: var(--text-color);
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Oswald', sans-serif;
-            font-weight: 600;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        /* Page Title */
-        .page-title-wrap {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-            padding: 100px 0 60px;
-            text-align: center;
-            color: white;
-            position: relative;
-            margin-bottom: 40px;
-             background-image: url('https://img.freepik.com/premium-vector/concept-banner-with-realistic-shopping-cart-yellow-background-vector-illustration_548887-101.jpg');
-        }
-        
-        .page-title-wrap h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: white;
-        }
-        
-        .breadcrumbs {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: inline-flex;
-            gap: 10px;
-        }
-        
-        .breadcrumbs li {
-            color: #bdc3c7;
-        }
-        
-        .breadcrumbs a {
-            color: white;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .breadcrumbs a:hover {
-            color: #93c5fd;
-        }
-        
-        /* Cart Table */
-        .shop_table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 40px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        
-        .shop_table th,
-        .shop_table td {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-            vertical-align: middle;
-        }
-        
-        .shop_table th {
-            background: var(--primary-dark);
-            font-weight: 600;
-            color: var(--white);
-        }
-        
-        .product-name {
-            display: flex;
-            align-items: center;
+    body {
+        font-family: 'Lato', sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        color: var(--text-color);
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 600;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+    
+    /* Page Title */
+    .page-title-wrap {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        padding: 100px 0 60px;
+        text-align: center;
+        color: white;
+        position: relative;
+        margin-bottom: 40px;
+        background-image: url('https://img.freepik.com/premium-vector/concept-banner-with-realistic-shopping-cart-yellow-background-vector-illustration_548887-101.jpg');
+    }
+    
+    .page-title-wrap h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: white;
+    }
+    
+    .breadcrumbs {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: inline-flex;
+        gap: 10px;
+    }
+    
+    .breadcrumbs li {
+        color: #bdc3c7;
+    }
+    
+    .breadcrumbs a {
+        color: white;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .breadcrumbs a:hover {
+        color: #93c5fd;
+    }
+    
+    /* Cart Table */
+    .shop_table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+    
+    .shop_table th,
+    .shop_table td {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        vertical-align: middle;
+    }
+    
+    .shop_table th {
+        background: var(--primary-dark);
+        font-weight: 600;
+        color: var(--white);
+    }
+    
+    .product-name {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .product-name img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: var(--border-radius);
+    }
+    
+    .quantity {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        width: 120px;
+    }
+    
+    .quantity button {
+        border: none;
+        background: var(--gray-light);
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .quantity button:hover {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+    
+    .quantity input {
+        border: none;
+        text-align: center;
+        width: 60px;
+        padding: 8px;
+    }
+    
+    .cart-remove {
+        color: #e74c3c;
+        font-size: 16px;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .cart-remove:hover {
+        color: #c0392b;
+    }
+    
+    .actions {
+        background: var(--gray-light);
+        padding: 20px;
+        border-radius: var(--border-radius);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .button {
+        background: var(--primary-color);
+        color: var(--white);
+        border: none;
+        padding: 12px 25px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    
+    .button:hover {
+        background: var(--primary-dark);
+        color: var(--white);
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(30, 64, 175, 0.3);
+    }
+    
+    .checkout-button {
+        background: var(--primary-dark);
+        float: right;
+    }
+    
+    .checkout-button:hover {
+        background: var(--primary-color);
+    }
+    
+    /* Cart Totals Section */
+    .cart-collaterals-wrap {
+        background: var(--white);
+        padding: 40px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 40px;
+    }
+    
+    .cart-collaterals {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-top: 40px;
+    }
+
+    /* Delivery Calculator */
+    .woocommerce-delivery-calculator {
+        flex: 1;
+        background: var(--white);
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .woocommerce-delivery-calculator:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-5px);
+    }
+
+    .woocommerce-delivery-calculator h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+    }
+
+    .delivery-calculator-form .form-row {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .delivery-calculator-form select,
+    .delivery-calculator-form input[type="text"],
+    .delivery-calculator-form input[type="email"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        color: var(--text-color);
+        background: var(--white);
+        transition: var(--transition);
+    }
+
+    .delivery-calculator-form select:focus,
+    .delivery-calculator-form input[type="text"]:focus,
+    .delivery-calculator-form input[type="email"]:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 5px rgba(30, 64, 175, 0.3);
+    }
+
+    .delivery-calculator-form input[type="radio"] {
+        margin: 0 10px 0 0;
+        accent-color: var(--primary-color);
+        width: 18px;
+        height: 18px;
+    }
+
+    .delivery-calculator-form label {
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        color: var(--text-color);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .delivery-calculator-form .price {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-left: 5px;
+    }
+
+    .delivery-calculator-form .button {
+        background: var(--primary-color);
+        color: var(--white);
+        border: none;
+        padding: 12px 25px;
+        border-radius: var(--border-radius);
+        font-family: 'Oswald', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        transition: var(--transition);
+        box-shadow: var(--shadow);
+    }
+
+    .delivery-calculator-form .button:hover {
+        background: var(--primary-dark);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    /* Cart Totals */
+    .cart_totals {
+        flex: 1;
+        background: var(--white);
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .cart_totals:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-5px);
+    }
+
+    .cart_totals h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--secondary-color);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+    }
+
+    .cart_totals table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cart_totals th,
+    .cart_totals td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #ddd;
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        color: var(--text-color);
+    }
+
+    .cart_totals th {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 600;
+        color: var(--secondary-color);
+        text-transform: uppercase;
+        width: 40%;
+    }
+
+    .cart_totals .price {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .cart_totals p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        color: var(--text-color);
+    }
+
+    .cart_totals .order-total {
+        background: var(--secondary-color);
+    }
+
+    .cart_totals .order-total th,
+    .cart_totals .order-total td {
+        color: var(--white);
+        font-family: 'Oswald', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .cart_totals .order-total .price {
+        color: var(--white);
+    }
+
+    /* Continue Shopping Section */
+    .continue-shopping {
+        text-align: center;
+        padding: 40px 0;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 40px;
+    }
+
+    .continue-shopping h3 {
+        color: var(--primary-dark);
+        margin-bottom: 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .cart-collaterals {
+            flex-direction: column;
             gap: 20px;
         }
-        
-        .product-name img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: var(--border-radius);
-        }
-        
-        .quantity {
-            display: flex;
-            align-items: center;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            width: 120px;
-        }
-        
-        .quantity button {
-            border: none;
-            background: var(--gray-light);
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .quantity button:hover {
-            background: var(--primary-color);
-            color: var(--white);
-        }
-        
-        .quantity input {
-            border: none;
-            text-align: center;
-            width: 60px;
-            padding: 8px;
-        }
-        
-        .cart-remove {
-            color: #e74c3c;
-            font-size: 16px;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        
-        .cart-remove:hover {
-            color: #c0392b;
-        }
-        
-        .actions {
-            background: var(--gray-light);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .button {
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 12px 25px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        
-        .button:hover {
-            background: var(--primary-dark);
-            color: var(--white);
-            text-decoration: none;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(30, 64, 175, 0.3);
-        }
-        
-        .checkout-button {
-            background: var(--primary-dark);
-            float: right;
-        }
-        
-        .checkout-button:hover {
-            background: var(--primary-color);
-        }
-        
-        /* Cart Totals Section */
-        .cart-collaterals-wrap {
-            background: var(--white);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
-        }
-        
-        .cart-collaterals {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
 
-        /* Delivery Calculator */
-        .woocommerce-delivery-calculator {
-            flex: 1;
-            background: var(--white);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .woocommerce-delivery-calculator:hover {
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-5px);
-        }
-
-        .woocommerce-delivery-calculator h2 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-        }
-
-        .delivery-calculator-form .form-row {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .delivery-calculator-form select,
-        .delivery-calculator-form input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-            color: var(--text-color);
-            background: var(--white);
-            transition: var(--transition);
-        }
-
-        .delivery-calculator-form select:focus,
-        .delivery-calculator-form input[type="text"]:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 5px rgba(30, 64, 175, 0.3);
-        }
-
-        .delivery-calculator-form input[type="radio"] {
-            margin: 0 10px 0 0;
-            accent-color: var(--primary-color);
-            width: 18px;
-            height: 18px;
-        }
-
-        .delivery-calculator-form label {
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-            color: var(--text-color);
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .delivery-calculator-form .price {
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-left: 5px;
-        }
-
-        .delivery-calculator-form .button {
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 12px 25px;
-            border-radius: var(--border-radius);
-            font-family: 'Oswald', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
-        }
-
-        .delivery-calculator-form .button:hover {
-            background: var(--primary-dark);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        /* Cart Totals */
+        .woocommerce-delivery-calculator,
         .cart_totals {
-            flex: 1;
-            background: var(--white);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .cart_totals:hover {
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-5px);
-        }
-
-        .cart_totals h2 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-        }
-
-        .cart_totals table {
-            width: 100%;
-            border-collapse: collapse;
+            padding: 20px;
         }
 
         .cart_totals th,
         .cart_totals td {
-            padding: 15px 20px;
-            border-bottom: 1px solid #ddd;
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-            color: var(--text-color);
+            padding: 10px;
+            font-size: 12px;
         }
 
-        .cart_totals th {
-            font-family: 'Oswald', sans-serif;
-            font-weight: 600;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            width: 40%;
+        .delivery-calculator-form .button {
+            padding: 10px;
         }
 
-        .cart_totals .price {
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .cart_totals p {
-            margin: 5px 0 0;
-            font-size: 14px;
-            color: var(--text-color);
-        }
-
-        .cart_totals .order-total {
-            background: var(--secondary-color);
-        }
-
-        .cart_totals .order-total th,
-        .cart_totals .order-total td {
-            color: var(--white);
-            font-family: 'Oswald', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .cart_totals .order-total .price {
-            color: var(--white);
-        }
-
-        /* Continue Shopping Section */
-        .continue-shopping {
+        .actions {
             text-align: center;
-            padding: 40px 0;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
+            flex-direction: column;
         }
-
-        .continue-shopping h3 {
-            color: var(--primary-dark);
-            margin-bottom: 20px;
+        
+        .checkout-button {
+            float: none;
+            margin-top: 10px;
         }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .cart-collaterals {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .woocommerce-delivery-calculator,
-            .cart_totals {
-                padding: 20px;
-            }
-
-            .cart_totals th,
-            .cart_totals td {
-                padding: 10px;
-                font-size: 12px;
-            }
-
-            .delivery-calculator-form .button {
-                padding: 10px;
-            }
-
-            .actions {
-                text-align: center;
-                flex-direction: column;
-            }
-            
-            .checkout-button {
-                float: none;
-                margin-top: 10px;
-            }
-            
-            .shop_table {
-                font-size: 12px;
-            }
-            
-            .shop_table th,
-            .shop_table td {
-                padding: 10px 5px;
-            }
-            
-            .product-name {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-            
-            .page-title-wrap h1 {
-                font-size: 36px;
-            }
+        
+        .shop_table {
+            font-size: 12px;
         }
-    </style>
-</head>
+        
+        .shop_table th,
+        .shop_table td {
+            padding: 10px 5px;
+        }
+        
+        .product-name {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .page-title-wrap h1 {
+            font-size: 36px;
+        }
+    }
+
+    .product-name-no-link {
+        color: var(--text-color);
+        font-weight: 600;
+    }
+
+    .quantity-disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+
 <section class="page-title-wrap">
     <div class="container">
         <div class="page-title-inner">
@@ -485,21 +497,23 @@
                 </thead>
                 <tbody>
                     {% for item in cart %}
+                        {% with product=item.product %}
                         <tr class="cart_item">
                             <td class="product-name">
                                 <div class="product-name">
-                                    {% if item.product.image %}
-                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80" height="80">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" width="80" height="80">
                                     {% else %}
-                                        <img src="https://via.placeholder.com/80x80/cccccc/666666?text={{ item.product.name|urlencode }}" alt="{{ item.product.name }}">
+                                        <img src="https://via.placeholder.com/80x80/cccccc/666666?text={{ product.name|urlencode }}" alt="{{ product.name }}">
                                     {% endif %}
                                     <div class="product-name-wrap">
                                         <div class="product-name-inner">
-                                            {% if item.product.slug %}
-    <a href="{% url 'store:product_detail' item.product.slug %}">{{ item.product.name }}</a>
-{% else %}
-    <span class="product-name-no-link">{{ item.product.name }}</span>
-{% endif %}
+                                            {% if product.slug and product.id %}
+                                                <a href="{% url 'store:product_detail' product.slug %}">{{ product.name }}</a>
+                                            {% else %}
+                                                <span class="product-name-no-link">{{ product.name }}</span>
+                                                <small class="text-muted">(Product unavailable)</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -509,7 +523,9 @@
                             </td>
                             <td class="product-quantity">
                                 <div class="quantity">
-                                    <form action="{% url 'cart:cart_add' item.product.id %}" method="post" class="cart-update-form">
+                                    {% if product.id %}
+                                    <form action="{% url 'cart:cart_add' product.id %}" method="post" class="cart-update-form">
+                                        {% csrf_token %}
                                         <div class="quantity-inner">
                                             <button type="button" class="btn-number" data-type="minus">
                                                 <i class="fas fa-minus"></i>
@@ -520,20 +536,36 @@
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
-                                        {% csrf_token %}
                                     </form>
+                                    {% else %}
+                                    <div class="quantity-disabled">
+                                        <button type="button" class="btn-number" disabled>
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" value="{{ item.quantity }}" disabled class="input-number">
+                                        <button type="button" class="btn-number" disabled>
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <small class="text-muted d-block">Unavailable</small>
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </td>
                             <td class="product-subtotal">
                                 <span class="price">GH₵ {{ item.total_price|floatformat:2 }}</span>
                             </td>
                             <td class="product-remove">
-                                <form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
-                                    <a href="#" class="cart-remove" onclick="this.parentNode.submit();"><i class="fas fa-times"></i></a>
+                                {% if product.id %}
+                                <form action="{% url 'cart:cart_remove' product.id %}" method="post">
                                     {% csrf_token %}
+                                    <a href="#" class="cart-remove" onclick="this.parentNode.submit(); return false;"><i class="fas fa-times"></i></a>
                                 </form>
+                                {% else %}
+                                <span class="cart-remove disabled" style="opacity: 0.5;"><i class="fas fa-times"></i></span>
+                                {% endif %}
                             </td>
                         </tr>
+                        {% endwith %}
                     {% endfor %}
                     <tr class="actions">
                         <td colspan="5">
@@ -543,122 +575,133 @@
                 </tbody>
             </table>
         {% else %}
-            <p>Your cart is empty.</p>
-            <a href="{% url 'store:product_list' %}" class="button">Browse Products</a>
+            <div style="text-align: center; padding: 60px 20px;">
+                <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Your cart is empty</h2>
+                <p style="margin-bottom: 30px; font-size: 16px;">Browse our products and add items to your cart.</p>
+                <a href="{% url 'store:product_list' %}" class="button">Browse Products</a>
+            </div>
         {% endif %}
     </div>
 
+    {% if cart|length > 0 %}
     <div class="cart-collaterals-wrap">
         <div class="container">
             <div class="cart-collaterals">
                 <div class="woocommerce-delivery-calculator">
                     <h2>Calculate Delivery</h2>
                     <form class="delivery-calculator-form" action="{% url 'cart:calculate_delivery' %}" method="post">
-    {% csrf_token %}
-    
-    <!-- Hidden country field -->
-    <input type="hidden" name="calc_delivery_country" value="GH">
-    
-    <!-- Region Field -->
-    <div class="form-row">
-        <select name="region" required>
-            <option value="">Select a region…</option>
-            <option value="Ahafo" {% if region == 'Ahafo' %}selected{% endif %}>Ahafo</option>
-            <option value="Ashanti" {% if region == 'Ashanti' %}selected{% endif %}>Ashanti</option>
-            <option value="Bono" {% if region == 'Bono' %}selected{% endif %}>Bono</option>
-            <option value="Bono East" {% if region == 'Bono East' %}selected{% endif %}>Bono East</option>
-            <option value="Central" {% if region == 'Central' %}selected{% endif %}>Central</option>
-            <option value="Eastern" {% if region == 'Eastern' %}selected{% endif %}>Eastern</option>
-            <option value="Greater Accra" {% if region == 'Greater Accra' %}selected{% endif %}>Greater Accra</option>
-            <option value="North East" {% if region == 'North East' %}selected{% endif %}>North East</option>
-            <option value="Northern" {% if region == 'Northern' %}selected{% endif %}>Northern</option>
-            <option value="Oti" {% if region == 'Oti' %}selected{% endif %}>Oti</option>
-            <option value="Savannah" {% if region == 'Savannah' %}selected{% endif %}>Savannah</option>
-            <option value="Upper East" {% if region == 'Upper East' %}selected{% endif %}>Upper East</option>
-            <option value="Upper West" {% if region == 'Upper West' %}selected{% endif %}>Upper West</option>
-            <option value="Volta" {% if region == 'Volta' %}selected{% endif %}>Volta</option>
-            <option value="Western" {% if region == 'Western' %}selected{% endif %}>Western</option>
-            <option value="Western North" {% if region == 'Western North' %}selected{% endif %}>Western North</option>
-        </select>
-    </div>
-    
-    <!-- Address Field - REQUIRED -->
-    <div class="form-row">
-        <input type="text" placeholder="Address *" name="address" value="{{ address|default:'' }}" required>
-    </div>
-    
-    <!-- City Field - REQUIRED -->
-    <div class="form-row">
-        <input type="text" placeholder="City *" name="city" value="{{ city|default:'' }}" required>
-    </div>
-    
-    <!-- Postal Code Field -->
-    <div class="form-row">
-        <input type="text" placeholder="Postcode / Zip" name="postal_code" value="{{ postal_code|default:'' }}">
-    </div>
-    
-    <!-- Delivery Method -->
-    <div class="form-row">
-        <input type="radio" name="delivery_method" value="free" {% if delivery_method == 'free' %}checked{% endif %} required>
-        <label>Free delivery</label>
-    </div>
-    <div class="form-row">
-        <input type="radio" name="delivery_method" value="flat" {% if delivery_method == 'flat' %}checked{% endif %} required>
-        <label>Flat rate: <span class="price">GH₵ 100</span></label>
-    </div>
-    
-    <!-- Personal Info Fields (for non-logged-in users) -->
-    {% if not user.is_authenticated %}
-    <div class="form-row">
-        <input type="text" placeholder="First Name *" name="first_name" value="{{ first_name|default:'' }}" required>
-    </div>
-    <div class="form-row">
-        <input type="text" placeholder="Last Name *" name="last_name" value="{{ last_name|default:'' }}" required>
-    </div>
-    <div class="form-row">
-        <input type="email" placeholder="Email *" name="email" value="{{ email|default:'' }}" required>
-    </div>
-    <div class="form-row">
-        <input type="text" placeholder="Phone Number * (e.g., +233501234567)" name="phone_number" value="{{ phone_number|default:'' }}" required pattern="\+[0-9]{10,12}">
-    </div>
-    {% endif %}
-    
-    <button type="submit" class="button">Update Totals</button>
-</form>
+                        {% csrf_token %}
+                        
+                        <!-- Hidden country field -->
+                        <input type="hidden" name="calc_delivery_country" value="GH">
+                        
+                        <!-- Region Field -->
+                        <div class="form-row">
+                            <select name="region" required>
+                                <option value="">Select a region…</option>
+                                <option value="Ahafo" {% if region == 'Ahafo' %}selected{% endif %}>Ahafo</option>
+                                <option value="Ashanti" {% if region == 'Ashanti' %}selected{% endif %}>Ashanti</option>
+                                <option value="Bono" {% if region == 'Bono' %}selected{% endif %}>Bono</option>
+                                <option value="Bono East" {% if region == 'Bono East' %}selected{% endif %}>Bono East</option>
+                                <option value="Central" {% if region == 'Central' %}selected{% endif %}>Central</option>
+                                <option value="Eastern" {% if region == 'Eastern' %}selected{% endif %}>Eastern</option>
+                                <option value="Greater Accra" {% if region == 'Greater Accra' %}selected{% endif %}>Greater Accra</option>
+                                <option value="North East" {% if region == 'North East' %}selected{% endif %}>North East</option>
+                                <option value="Northern" {% if region == 'Northern' %}selected{% endif %}>Northern</option>
+                                <option value="Oti" {% if region == 'Oti' %}selected{% endif %}>Oti</option>
+                                <option value="Savannah" {% if region == 'Savannah' %}selected{% endif %}>Savannah</option>
+                                <option value="Upper East" {% if region == 'Upper East' %}selected{% endif %}>Upper East</option>
+                                <option value="Upper West" {% if region == 'Upper West' %}selected{% endif %}>Upper West</option>
+                                <option value="Volta" {% if region == 'Volta' %}selected{% endif %}>Volta</option>
+                                <option value="Western" {% if region == 'Western' %}selected{% endif %}>Western</option>
+                                <option value="Western North" {% if region == 'Western North' %}selected{% endif %}>Western North</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Address Field - REQUIRED -->
+                        <div class="form-row">
+                            <input type="text" placeholder="Address *" name="address" value="{{ address|default:'' }}" required>
+                        </div>
+                        
+                        <!-- City Field - REQUIRED -->
+                        <div class="form-row">
+                            <input type="text" placeholder="City *" name="city" value="{{ city|default:'' }}" required>
+                        </div>
+                        
+                        <!-- Postal Code Field -->
+                        <div class="form-row">
+                            <input type="text" placeholder="Postcode / Zip" name="postal_code" value="{{ postal_code|default:'' }}">
+                        </div>
+                        
+                        <!-- Delivery Method -->
+                        <div class="form-row">
+                            <input type="radio" name="delivery_method" value="free" {% if delivery_method == 'free' %}checked{% endif %} required>
+                            <label>Free delivery</label>
+                        </div>
+                        <div class="form-row">
+                            <input type="radio" name="delivery_method" value="flat" {% if delivery_method == 'flat' %}checked{% endif %} required>
+                            <label>Flat rate: <span class="price">GH₵ 100</span></label>
+                        </div>
+                        
+                        <!-- Personal Info Fields (for non-logged-in users) -->
+                        {% if not user.is_authenticated %}
+                        <div class="form-row">
+                            <input type="text" placeholder="First Name *" name="first_name" value="{{ first_name|default:'' }}" required>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" placeholder="Last Name *" name="last_name" value="{{ last_name|default:'' }}" required>
+                        </div>
+                        <div class="form-row">
+                            <input type="email" placeholder="Email *" name="email" value="{{ email|default:'' }}" required>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" placeholder="Phone Number * (e.g., +233501234567)" name="phone_number" value="{{ phone_number|default:'' }}" required pattern="\+[0-9]{10,12}">
+                        </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="button">Update Totals</button>
+                    </form>
                 </div>
 
                 <div class="cart_totals">
-    <h2>Cart Totals</h2>
-    <table>
-        <tr class="cart-subtotal">
-            <th>Subtotal</th>
-            <td><span class="price">GH₵ {{ cart.get_total_price|floatformat:2 }}</span></td>
-        </tr>
-        <tr class="delivery">
-            <th>Delivery</th>
-            <td>
-                <span class="price">GH₵ {{ delivery_cost|floatformat:2 }}</span>
-                <p>Delivery to <strong>{{ region|default:"Select a region" }}, Ghana</strong>.</p>
-            </td>
-        </tr>
-        <tr class="order-total">
-            <th>Total</th>
-            <td><strong><span class="price">GH₵ {{ cart.get_total_price|add:delivery_cost|floatformat:2 }}</span></strong></td>
-        </tr>
-    </table>
-</div>
+                    <h2>Cart Totals</h2>
+                    <table>
+                        <tr class="cart-subtotal">
+                            <th>Subtotal</th>
+                            <td><span class="price">GH₵ {{ cart.get_total_price|floatformat:2 }}</span></td>
+                        </tr>
+                        <tr class="delivery">
+                            <th>Delivery</th>
+                            <td>
+                                <span class="price">GH₵ {{ delivery_cost|default:0|floatformat:2 }}</span>
+                                {% if region %}
+                                <p>Delivery to <strong>{{ region }}, Ghana</strong>.</p>
+                                {% else %}
+                                <p>Select a region to calculate delivery.</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr class="order-total">
+                            <th>Total</th>
+                            <td><strong><span class="price">GH₵ {{ cart.get_total_price|add:delivery_cost|default:cart.get_total_price|floatformat:2 }}</span></strong></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+    {% endif %}
+</main>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const quantityContainers = document.querySelectorAll('.quantity-inner');
-        quantityContainers.forEach(container => {
-            const minusButton = container.querySelector('.btn-number[data-type="minus"]');
-            const plusButton = container.querySelector('.btn-number[data-type="plus"]');
-            const input = container.querySelector('.input-text.qty');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityContainers = document.querySelectorAll('.quantity-inner');
+    quantityContainers.forEach(container => {
+        const minusButton = container.querySelector('.btn-number[data-type="minus"]');
+        const plusButton = container.querySelector('.btn-number[data-type="plus"]');
+        const input = container.querySelector('input[name="quantity"]');
 
+        if (minusButton && plusButton && input) {
             minusButton.addEventListener('click', function() {
                 let value = parseInt(input.value);
                 if (value > 1) {
@@ -672,7 +715,17 @@
                 input.value = value + 1;
                 container.closest('form').submit();
             });
+        }
+    });
+
+    // Prevent form submission on remove link
+    const removeLinks = document.querySelectorAll('.cart-remove');
+    removeLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.parentNode.submit();
         });
     });
-    </script>
+});
+</script>
 {% endblock %}
