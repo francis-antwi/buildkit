@@ -80,27 +80,24 @@
             <h2>What We Offer</h2>
             <p>Always Dedicated and Devoted</p>
         </div>
-
-        <div class="row">
+<div class="row">
     {% for category in featured_categories %}
         <div class="col-md-4 mb-4">
-            <div class="service-box card h-100 shadow-sm hover-shadow transition-all">
+            {% if category.slug %}
+                <a href="{% url 'store:product_list_by_category' category.slug %}" 
+                   class="text-decoration-none">
+            {% endif %}
+            
+            <div class="service-box card h-100 shadow-sm hover-shadow transition-all {% if category.slug %}clickable-card{% endif %}">
                 <div class="card-body text-center p-4">
                     <!-- Dynamic Icon -->
                     <div class="icon-wrapper mb-3">
                         <i class="{{ category.icon_class|default:'fas fa-tools' }} fa-3x text-{{ category.color_class|default:'primary' }}"></i>
                     </div>
                     
-                    <!-- Category Name with Link -->
-                    <h5 class="card-title mb-3">
-                        {% if category.slug %}
-                            <a href="{% url 'store:product_list_by_category' category.slug %}" 
-                               class="text-decoration-none text-dark hover-text-primary">
-                                {{ category.name }}
-                            </a>
-                        {% else %}
-                            {{ category.name }}
-                        {% endif %}
+                    <!-- Category Name -->
+                    <h5 class="card-title mb-3 text-dark {% if category.slug %}hover-text-primary{% endif %}">
+                        {{ category.name }}
                     </h5>
                     
                     <!-- Category Description -->
@@ -118,6 +115,10 @@
                     {% endif %}
                 </div>
             </div>
+            
+            {% if category.slug %}
+                </a>
+            {% endif %}
         </div>
     {% empty %}
         <!-- Enhanced Fallback -->
@@ -133,7 +134,6 @@
         </div>
     {% endfor %}
 </div>
-
 {% if featured_categories %}
     <div class="text-center mt-5">
         <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg px-5">
