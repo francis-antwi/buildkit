@@ -517,7 +517,39 @@
              style="cursor: default;">
     {% endif %}
 </div>
+<div class="product-image-section">
+    {% if product.image %}
+        <img src="{{ product.image.url }}" 
+             alt="{{ product.name }}" 
+             class="main-product-image"
+             data-bs-toggle="modal" 
+             data-bs-target="#imageModal"
+             style="cursor: zoom-in;">
+    {% else %}
+        <img src="https://via.placeholder.com/500x400?text=No+Image" 
+             alt="{{ product.name }}" 
+             class="main-product-image"
+             style="cursor: default;">
+    {% endif %}
+</div>
 
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">{{ product.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ product.image.url }}" 
+                     alt="{{ product.name }}" 
+                     class="img-fluid"
+                     style="max-height: 80vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</div>
             <!-- Product Info -->
             <div class="product-info-section">
                 <h1 class="product-title">{{ product.name }}</h1>
