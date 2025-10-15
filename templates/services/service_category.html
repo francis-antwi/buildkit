@@ -491,5 +491,87 @@
 .product-card:nth-child(4) { animation-delay: 0.4s; }
 .product-card:nth-child(5) { animation-delay: 0.5s; }
 .product-card:nth-child(6) { animation-delay: 0.6s; }
+   .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 40px 0;
+        padding: 20px 0;
+        list-style: none;
+    }
+    
+    .page-item {
+        margin: 0 4px;
+    }
+    
+    .page-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 18px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-width: 46px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        color: #2c3e50;
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        border: 1px solid #e9ecef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .page-link:hover {
+        background: linear-gradient(to bottom, #3498db, #2980b9);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        border-color: #3498db;
+    }
+    
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #1e40af, #1e3a8a);
+        color: white;
+        border-color: #1e3a8a;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+        transform: scale(1.05);
+        position: relative;
+    }
+    
+    .page-item.active .page-link::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        background: #1e40af;
+        border-radius: 50%;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .pagination {
+            gap: 5px;
+        }
+        
+        .page-link {
+            padding: 10px 14px;
+            min-width: 42px;
+            font-size: 14px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .page-link {
+            padding: 8px 12px;
+            min-width: 38px;
+            font-size: 13px;
+        }
+    }
 </style>
 {% endblock %}

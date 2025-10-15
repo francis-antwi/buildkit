@@ -376,74 +376,161 @@
         margin-bottom: 5px;
     }
     
-    /* Pagination */
-    .pagination {
+ .pagination {
         display: flex;
         justify-content: center;
-        list-style: none;
-        margin-top: 40px;
-    }
-    
-    .pagination li {
-        margin: 0 5px;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 40px 0;
+        padding: 20px 0;
     }
     
     .pagination a {
-        display: block;
-        padding: 8px 15px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        transition: all 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 18px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-width: 46px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        color: #2c3e50;
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        border: 1px solid #e9ecef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     .pagination a:hover {
-        background-color: #1e40af;
+        background: linear-gradient(to bottom, #3498db, #2980b9);
         color: white;
-        border-color: #1e40af;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        border-color: #3498db;
     }
     
-    .pagination .active a {
-        background-color: #1e40af;
+    .pagination a.active {
+        background: linear-gradient(135deg, #1e40af, #1e3a8a);
         color: white;
-        border-color: #1e40af;
+        border-color: #1e3a8a;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+        transform: scale(1.05);
+        position: relative;
     }
     
-    /* Responsive */
-    @media (max-width: 1199px) {
-        .product-listing {
-            grid-template-columns: repeat(3, 1fr);
-        }
+    .pagination a.active::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        background: #1e40af;
+        border-radius: 50%;
     }
     
-    @media (max-width: 991px) {
-        .product-listing {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .col-md-9, .col-md-3 {
-            width: 100%;
-        }
-    }
-    
-    @media (max-width: 767px) {
-        .product-listing {
-            grid-template-columns: 1fr;
-        }
-        
-        .product-thumb {
-            height: 250px;
-        }
-    }
-    
-    @media (max-width: 575px) {
-        .product-thumb {
-            height: 200px;
-        }
-    }
     .pagination-ellipsis {
-    padding: 8px 5px;
-    color: #666;
-}
+        padding: 12px 8px;
+        color: #6c757d;
+        font-weight: bold;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Previous and Next buttons specific styling */
+    .pagination a:first-child,
+    .pagination a:last-child {
+        background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+        border: 1px solid #dee2e6;
+        font-weight: 600;
+    }
+    
+    .pagination a:first-child:hover,
+    .pagination a:last-child:hover {
+        background: linear-gradient(to bottom, #1e40af, #1e3a8a);
+        color: white;
+        border-color: #1e3a8a;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .pagination {
+            gap: 5px;
+        }
+        
+        .pagination a {
+            padding: 10px 14px;
+            min-width: 42px;
+            font-size: 14px;
+        }
+        
+        .pagination-ellipsis {
+            padding: 10px 5px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .pagination a {
+            padding: 8px 12px;
+            min-width: 38px;
+            font-size: 13px;
+        }
+    }
+      .product-thumb {
+        cursor: pointer;
+    }
+    
+    .product-thumb img {
+        transition: transform 0.3s ease;
+    }
+    
+    .product-thumb:hover img {
+        transform: scale(1.02);
+    }
+    
+    /* Simple fullscreen modal */
+    .fullscreen-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #fullscreen-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+    }
+    
+    .close-btn:hover {
+        background: rgba(255, 0, 0, 0.7);
+    }
 </style>
 
 <!-- Page Title Section -->
@@ -472,16 +559,17 @@
                 {% else %}
                     <h3>All Products</h3>
                 {% endif %}
-                
-                <!-- Product Grid -->
+                        <!-- Product Grid -->
                 <div class="product-listing">
                     {% for product in products %}
                     <div class="product-item">
                         <div class="product-thumb">
                             {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                                     onclick="openFullscreen('{{ product.image.url }}', '{{ product.name }}')">
                             {% else %}
-                                <img src="https://via.placeholder.com/300x200/ffffff/cccccc?text=No+Image" alt="{{ product.name }}">
+                                <img src="https://via.placeholder.com/300x200/ffffff/cccccc?text=No+Image" 
+                                     alt="{{ product.name }}">
                             {% endif %}
                         </div>
                         <div class="product-info">
@@ -504,7 +592,6 @@
                                 {{ product.name|truncatechars:50 }}
                             </a>
                         
-                            
                             <!-- Price -->
                             <span class="price">GH₵{{ product.price|floatformat:2 }}</span>
                             
@@ -547,7 +634,15 @@
                     </div>
                     {% endfor %}
                 </div>
-                
+
+                <!-- Simple Fullscreen Modal -->
+                <div id="fullscreen-modal" class="fullscreen-modal" onclick="closeFullscreen()">
+                    <span class="close-btn" onclick="closeFullscreen()">
+                        <i class="fas fa-times"></i>
+                    </span>
+                    <img id="fullscreen-image" src="" alt="Fullscreen Product Image">
+                </div>
+
             <!-- Pagination -->
 {% if products.has_other_pages %}
 <div class="pagination">
@@ -844,5 +939,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+    // Fullscreen image functionality
+    function openFullscreen(imageUrl, productName) {
+        const modal = document.getElementById('fullscreen-modal');
+        const fullscreenImage = document.getElementById('fullscreen-image');
+        
+        fullscreenImage.src = imageUrl;
+        fullscreenImage.alt = productName;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeFullscreen() {
+        const modal = document.getElementById('fullscreen-modal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeFullscreen();
+        }
+    });
+
 </script>
 {% endblock %}
