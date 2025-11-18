@@ -115,6 +115,24 @@ class Category(models.Model):
         return bool(self.service_type)
 
 
+class SpecificationGroup(models.Model):
+    """Pre-defined groups for technical specifications"""
+    name = models.CharField(max_length=50, unique=True)
+    display_name = models.CharField(max_length=50)
+    display_order = models.PositiveIntegerField(default=0)
+    icon_class = models.CharField(
+        max_length=50, 
+        default='fas fa-cog',
+        help_text="Font Awesome icon class for this group"
+    )
+
+    class Meta:
+        ordering = ['display_order', 'name']
+
+    def __str__(self):
+        return self.display_name
+
+
 class Product(models.Model):
     PRODUCT_TYPES = [
         ('material', 'Building Material'),
@@ -143,6 +161,20 @@ class Product(models.Model):
         default=False,
         help_text="Apply 10% price increase when saving this product"
     )
+    
+    # New Technical Data Fields
+    has_technical_specs = models.BooleanField(
+        default=False,
+        help_text="Check if this product has technical specifications"
+    )
+    technical_data_sheet = CloudinaryField(
+        'technical_data_sheet', 
+        folder='buildkit/technical_sheets/',
+        blank=True, 
+        null=True,
+        help_text="Upload PDF technical data sheet"
+    )
+    
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -152,6 +184,7 @@ class Product(models.Model):
             models.Index(fields=['category', 'available']),
             models.Index(fields=['product_type', 'available']),
             models.Index(fields=['featured', 'available']),
+            models.Index(fields=['has_technical_specs']),
         ]
 
     def __str__(self):
@@ -173,6 +206,10 @@ class Product(models.Model):
             self.price = self.price * Decimal('1.10')
             # Reset the flag so it doesn't apply again on next save
             self.apply_price_increase = False
+        
+        # Update has_technical_specs based on whether specs exist
+        if hasattr(self, 'technical_specs'):
+            self.has_technical_specs = self.technical_specs.exists()
         
         self.full_clean()
         super().save(*args, **kwargs)
@@ -220,6 +257,74 @@ class Product(models.Model):
             return "warning"
         else:
             return "success"
+    
+    @property
+    def has_technical_data(self):
+        """Check if product has any technical data (specs or PDF)"""
+        return self.has_technical_specs or bool(self.technical_data_sheet)
+    
+    def get_important_specs(self):
+        """Get important specifications for quick view"""
+        return self.technical_specs.filter(is_important=True).order_by('display_order')
+    
+    def get_specs_by_group(self):
+        """Get specifications grouped by category"""
+        groups = {}
+        for spec in self.technical_specs.all().order_by('group', 'display_order'):
+            if spec.group not in groups:
+                groups[spec.group] = []
+            groups[spec.group].append(spec)
+        return groups
+
+
+class TechnicalSpecification(models.Model):
+    """Model for storing technical specifications for products"""
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE, 
+        related_name='technical_specs'
+    )
+    spec_name = models.CharField(
+        max_length=100,
+        help_text="Name of the specification (e.g., 'Power Consumption', 'Dimensions')"
+    )
+    spec_value = models.CharField(
+        max_length=200,
+        help_text="Value of the specification (e.g., '1500W', '120x80x150cm')"
+    )
+    spec_unit = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Unit of measurement (e.g., 'W', 'kg', 'mm')"
+    )
+    group = models.CharField(
+        max_length=50,
+        default='General',
+        help_text="Group specifications (e.g., 'Electrical', 'Physical', 'Performance')"
+    )
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text="Order in which specs are displayed within their group"
+    )
+    is_important = models.BooleanField(
+        default=False,
+        help_text="Mark as important to show in quick specs summary"
+    )
+
+    class Meta:
+        ordering = ['group', 'display_order', 'spec_name']
+        verbose_name = "Technical Specification"
+        verbose_name_plural = "Technical Specifications"
+
+    def __str__(self):
+        return f"{self.product.name} - {self.spec_name}"
+
+    @property
+    def display_value(self):
+        """Return formatted value with unit"""
+        if self.spec_unit:
+            return f"{self.spec_value} {self.spec_unit}"
+        return self.spec_value
 
 
 class ProductImage(models.Model):

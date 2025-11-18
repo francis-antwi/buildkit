@@ -154,6 +154,156 @@
         margin-bottom: 25px;
     }
 
+    /* Technical Specifications Styles */
+    .quick-specs {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #28a745;
+        margin-bottom: 25px;
+    }
+
+    .quick-specs h5 {
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .quick-specs h5 i {
+        color: #ffc107;
+    }
+
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .spec-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .spec-label {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        margin-bottom: 5px;
+    }
+
+    .spec-value {
+        font-weight: 600;
+        color: var(--secondary-color);
+    }
+
+    .tds-download {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .tds-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .tds-btn:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Technical Specifications Tab */
+    .spec-group {
+        margin-bottom: 30px;
+        border-left: 4px solid var(--primary-color);
+        padding-left: 15px;
+        background: #fafafa;
+        padding: 20px;
+        border-radius: var(--border-radius);
+    }
+
+    .spec-group h5 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .spec-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .spec-table tr {
+        border-bottom: 1px solid #eee;
+    }
+
+    .spec-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .spec-table td {
+        padding: 12px 8px;
+        vertical-align: top;
+    }
+
+    .spec-table td:first-child {
+        width: 40%;
+        font-weight: 600;
+        color: var(--secondary-color);
+    }
+
+    .spec-badge {
+        background: #ffc107;
+        color: #000;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+
+    .tech-support-card {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border: 1px solid #90caf9;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-top: 30px;
+    }
+
+    .tech-support-card h6 {
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .support-contacts {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .support-contacts li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+
     /* Cart Actions */
     .cart-actions {
         margin-bottom: 25px;
@@ -263,6 +413,7 @@
         display: flex;
         border-bottom: 2px solid #eee;
         margin-bottom: 30px;
+        flex-wrap: wrap;
     }
 
     .tab-header {
@@ -271,6 +422,9 @@
         font-weight: 600;
         border-bottom: 2px solid transparent;
         transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .tab-header.active {
@@ -299,7 +453,7 @@
 
     .review-header {
         display: flex;
-        justify-content: between;
+        justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
     }
@@ -460,6 +614,10 @@
         .review-form {
             padding: 20px;
         }
+        
+        .specs-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     @media (max-width: 480px) {
@@ -502,39 +660,39 @@
 
         <div class="product-grid">
             <!-- Product Image -->
-          <div class="product-image-section">
-    {% if product.image %}
-        <img src="{{ product.image.url }}" 
-             alt="{{ product.name }}" 
-             class="main-product-image"
-             data-bs-toggle="modal" 
-             data-bs-target="#imageModal"
-             style="cursor: zoom-in;">
-    {% else %}
-        <img src="https://via.placeholder.com/500x400?text=No+Image" 
-             alt="{{ product.name }}" 
-             class="main-product-image"
-             style="cursor: default;">
-    {% endif %}
-</div>
+            <div class="product-image-section">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" 
+                         alt="{{ product.name }}" 
+                         class="main-product-image"
+                         data-bs-toggle="modal" 
+                         data-bs-target="#imageModal"
+                         style="cursor: zoom-in;">
+                {% else %}
+                    <img src="https://via.placeholder.com/500x400?text=No+Image" 
+                         alt="{{ product.name }}" 
+                         class="main-product-image"
+                         style="cursor: default;">
+                {% endif %}
+            </div>
 
-<!-- Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">{{ product.name }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- Modal -->
+            <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="imageModalLabel">{{ product.name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img src="{{ product.image.url }}" 
+                                 alt="{{ product.name }}" 
+                                 class="img-fluid"
+                                 style="max-height: 80vh; object-fit: contain;">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body text-center">
-                <img src="{{ product.image.url }}" 
-                     alt="{{ product.name }}" 
-                     class="img-fluid"
-                     style="max-height: 80vh; object-fit: contain;">
-            </div>
-        </div>
-    </div>
-</div>
 
             <!-- Product Info -->
             <div class="product-info-section">
@@ -556,6 +714,34 @@
                 </div>
 
                 <div class="product-price">GH₵ {{ product.price|floatformat:2 }}</div>
+
+                <!-- Quick Technical Specifications -->
+                {% if product.has_technical_data %}
+                <div class="quick-specs">
+                    <h5><i class="fas fa-bolt"></i> Key Specifications</h5>
+                    <div class="specs-grid">
+                        {% for spec in product.get_important_specs %}
+                        <div class="spec-item">
+                            <span class="spec-label">{{ spec.spec_name }}</span>
+                            <span class="spec-value">{{ spec.display_value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- TDS Download Button -->
+                    {% if product.technical_data_sheet %}
+                    <div class="tds-download">
+                        <a href="{{ product.technical_data_sheet.url }}" 
+                           class="tds-btn"
+                           target="_blank"
+                           download>
+                            <i class="fas fa-file-pdf"></i>
+                            Download Technical Data Sheet
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
 
                 <div class="product-description">
                     {{ product.description }}
@@ -593,6 +779,10 @@
                         <span class="meta-label">Type:</span>
                         <span>{{ product.get_product_type_display }}</span>
                     </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Stock:</span>
+                        <span class="badge bg-{{ product.stock_status_class }}">{{ product.stock_status }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -600,16 +790,84 @@
         <!-- Product Tabs -->
         <div class="product-tabs">
             <div class="tab-headers">
-                <div class="tab-header active" data-tab="description">Description</div>
-                <div class="tab-header" data-tab="reviews">Reviews ({{ review_count }})</div>
-            </div>
-
-            <div class="tab-content active" id="description-tab">
-                <div class="product-description">
-                    {{ product.description }}
+                <div class="tab-header active" data-tab="description">
+                    <i class="fas fa-file-alt"></i> Description
+                </div>
+                
+                {% if product.has_technical_specs %}
+                <div class="tab-header" data-tab="specifications">
+                    <i class="fas fa-list-alt"></i> Technical Specifications
+                </div>
+                {% endif %}
+                
+                <div class="tab-header" data-tab="reviews">
+                    <i class="fas fa-star"></i> Reviews ({{ review_count }})
                 </div>
             </div>
 
+            <!-- Description Tab -->
+            <div class="tab-content active" id="description-tab">
+                <div class="product-description">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- Technical Specifications Tab -->
+            {% if product.has_technical_specs %}
+            <div class="tab-content" id="specifications-tab">
+                <div class="technical-specifications">
+                    {% for group, specs in product.get_specs_by_group.items %}
+                    <div class="spec-group">
+                        <h5><i class="fas fa-folder"></i> {{ group }}</h5>
+                        <table class="spec-table">
+                            <tbody>
+                                {% for spec in specs %}
+                                <tr>
+                                    <td>
+                                        {{ spec.spec_name }}
+                                        {% if spec.is_important %}
+                                        <span class="spec-badge">Key Spec</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ spec.display_value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Technical Support Info -->
+                <div class="tech-support-card">
+                    <h6><i class="fas fa-headset"></i> Technical Support</h6>
+                    <p class="small mb-3">Need assistance with technical specifications or installation?</p>
+                    <ul class="support-contacts">
+                        <li><i class="fas fa-phone text-success"></i> Call: +233 123 456 789</li>
+                        <li><i class="fas fa-envelope text-primary"></i> Email: tech@buildkit.com</li>
+                        <li><i class="fas fa-clock text-warning"></i> Mon-Fri: 8AM-5PM</li>
+                    </ul>
+                </div>
+
+                <!-- TDS Download in Specifications Tab -->
+                {% if product.technical_data_sheet %}
+                <div class="text-center mt-4">
+                    <a href="{{ product.technical_data_sheet.url }}" 
+                       class="tds-btn"
+                       target="_blank"
+                       download>
+                        <i class="fas fa-download"></i>
+                        Download Complete Technical Data Sheet (PDF)
+                    </a>
+                    <p class="text-muted mt-2">
+                        Includes detailed performance graphs, installation diagrams, and compliance certificates.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Reviews Tab -->
             <div class="tab-content" id="reviews-tab">
                 <div class="reviews-list">
                     <h3>{{ review_count }} Review{{ review_count|pluralize }}</h3>
@@ -696,6 +954,7 @@
         {% endif %}
     </div>
 </main>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Get CSRF token

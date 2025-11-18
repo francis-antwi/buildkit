@@ -85,7 +85,13 @@ def product_list(request, category_slug=None):
     return render(request, 'store/index.html', context)
 
 def product_detail(request, slug):
-    product = get_object_or_404(Product, slug=slug, available=True)
+    product = get_object_or_404(
+        Product.objects.select_related('category')
+                      .prefetch_related('images', 'testimonials', 'technical_specs'),
+        slug=slug, 
+        available=True
+    )
+    
     cart_product_form = CartAddProductForm(initial={'quantity': 1, 'override': False})
     approved_testimonials = product.testimonials.filter(approved=True)
     avg_rating = approved_testimonials.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
