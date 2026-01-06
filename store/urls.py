@@ -15,7 +15,15 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
     path('products/<int:product_id>/review/', views.add_review, name='add_review'),
+    
+    # Firebase OTP endpoints
     path('resend-verification/', views.resend_verification, name='resend_verification'),
+    path('send-otp/', views.send_otp, name='send_otp'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
+    path('verify-firebase-token/', views.verify_firebase_token, name='verify_firebase_token'),
+    path('verify-phone/', views.verify_phone_view, name='verify_phone'),
+    
+    # Registration session management
     path('register/clear/', views.clear_registration_session, name='clear_registration_session'),
     
     # Single service category view - REPLACES ALL INDIVIDUAL SERVICE VIEWS
@@ -37,6 +45,7 @@ urlpatterns = [
              template_name='auth/password_reset_done.html'
          ), 
          name='password_reset_done'),
+    path('verify-manual-otp/', views.verify_manual_otp, name='verify_manual_otp'),
     
     path('password-reset-confirm/<uidb64>/<token>/', 
          auth_views.PasswordResetConfirmView.as_view(

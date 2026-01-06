@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Verify Phone Number</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        We've sent a verification code to <strong>{{ formatted_phone }}</strong>
+                    </p>
+                    
+                    {% if not using_firebase %}
+                    <div class="alert alert-info">
+                        <strong>Demo Mode:</strong> Your verification code is: <code>{{ verification_code }}</code>
+                    </div>
+                    {% endif %}
+                    
+                    <form id="verification-form" method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- Hidden fields for Firebase -->
+                        <input type="hidden" name="phone_number" value="{{ formatted_phone }}" id="phone-number-input">
+                        
+                        <!-- OTP Input (for manual entry) -->
+                        <div class="form-group mb-3">
+                            <label for="otp-input">Enter 6-digit code</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="otp-input" 
+                                   name="verification_code"
+                                   maxlength="6" 
+                                   pattern="\d{6}" 
+                                   required
+                                   placeholder="000000">
+                        </div>
+                        
+                        <!-- Firebase Recaptcha Container -->
+                        <div id="recaptcha-container" class="mb-3"></div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="verify-btn">
+                                Verify
+                            </button>
+                            
+                            <button type="button" class="btn btn-outline-secondary" id="resend-btn">
+                                Resend Code
+                            </button>
+                            
+                            <a href="{% url 'store:register' %}" class="btn btn-link">
+                                Back to Registration
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+<script>
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "{{ FIREBASE_WEB_API_KEY }}",
+    authDomain: "{{ FIREBASE_AUTH_DOMAIN }}",
+    projectId: "{{ FIREBASE_PROJECT_ID }}",
+    appId: "{{ FIREBASE_APP_ID }}",
+    messagingSenderId: "{{ FIREBASE_MESSAGING_SENDER_ID }}",
+    storageBucket: "{{ FIREBASE_STORAGE_BUCKET }}"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+let verificationId = null;
+
+// Handle form submission
+document.getElementById('verification-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const otp = document.getElementById('otp-input').value;
+    const phoneNumber = document.getElementById('phone-number-input').value;
+    
+    if (verificationId) {
+        // Firebase verification
+        const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, otp);
+        
+        firebase.auth().signInWithCredential(credential)
+            .then((result) => {
+                // Get ID token
+                return result.user.getIdToken();
+            })
+            .then((idToken) => {
+                // Send to backend for verification
+                return fetch("{% url 'store:verify_firebase_token' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        firebase_id_token: idToken,
+                        phone_number: phoneNumber
+                    })
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = "{% url 'store:index' %}";
+                } else {
+                    alert('Verification failed: ' + data.error);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Verification failed: ' + error.message);
+            });
+    } else {
+        // Manual verification
+        this.submit();
+    }
+});
+
+// Resend code
+document.getElementById('resend-btn').addEventListener('click', function() {
+    fetch("{% url 'store:resend_verification' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('New verification code sent!');
+        } else {
+            alert('Failed to resend: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to resend code');
+    });
+});
+</script>
+{% endblock %}
