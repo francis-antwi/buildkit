@@ -807,6 +807,74 @@
         .popup-search {
             text-align: center;
         }
+        /* Add these styles to your CSS */
+.btn-admin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: #dc3545; /* Red color for admin */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 8px;
+}
+
+.btn-admin:hover {
+    background-color: #c82333;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-admin i {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+/* Adjust spacing for buttons */
+.custom-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* If you want a different color scheme, here are some options: */
+
+/* Purple admin button */
+.btn-admin.purple {
+    background-color: #6f42c1;
+}
+
+.btn-admin.purple:hover {
+    background-color: #5a32a3;
+}
+
+/* Dark admin button */
+.btn-admin.dark {
+    background-color: #343a40;
+}
+
+.btn-admin.dark:hover {
+    background-color: #23272b;
+}
+
+/* Gold admin button */
+.btn-admin.gold {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-admin.gold:hover {
+    background-color: #e0a800;
+    color: #212529;
+}
         .popup-search input {
             width: 80%;
             padding: 10px;
@@ -1050,23 +1118,31 @@
                         </li>
                     </ul>
                     <div class="ms-3 custom-buttons">
-                        <a href="{% url 'store:product_list' %}" class="btn-quote">Buy now</a>
-                        <button class="btn-search" aria-label="Search"><i class="fa fa-search"></i></button>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'store:logout' %}" class="btn-login" aria-label="Logout">Logout</a>
-                        {% else %}
-                            <a href="{% url 'store:login' %}" class="btn-login" aria-label="Login">Login</a>
-                            <a href="{% url 'store:register' %}" class="btn-login" aria-label="Register">Register</a>
-                        {% endif %}
-                        <button class="btn-cart" aria-label="Cart">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span class="cart-count" id="btn-cart-count">
-                                {% with total_items=cart|length %}
-                                    {{ total_items|default:0 }}
-                                {% endwith %}
-                            </span>
-                        </button>
-                    </div>
+    <a href="{% url 'store:product_list' %}" class="btn-quote">Buy now</a>
+    <button class="btn-search" aria-label="Search"><i class="fa fa-search"></i></button>
+    
+    {% if user.is_authenticated %}
+        <!-- Add admin button for staff users -->
+        {% if user.is_staff %}
+            <a href="{% url 'admin:index' %}" class="btn-admin" aria-label="Admin Panel" target="_blank">
+                <i class="fa fa-cog"></i> Admin
+            </a>
+        {% endif %}
+        <a href="{% url 'store:logout' %}" class="btn-login" aria-label="Logout">Logout</a>
+    {% else %}
+        <a href="{% url 'store:login' %}" class="btn-login" aria-label="Login">Login</a>
+        <a href="{% url 'store:register' %}" class="btn-login" aria-label="Register">Register</a>
+    {% endif %}
+    
+    <button class="btn-cart" aria-label="Cart">
+        <i class="fa fa-shopping-cart"></i>
+        <span class="cart-count" id="btn-cart-count">
+            {% with total_items=cart|length %}
+                {{ total_items|default:0 }}
+            {% endwith %}
+        </span>
+    </button>
+</div>
                 </div>
             </nav>
         </div>
