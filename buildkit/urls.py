@@ -13,19 +13,14 @@ import os
 
 # Generate or get the admin secret from environment
 ADMIN_SECRET = os.environ.get('DJANGO_ADMIN_SECRET')
+ADMIN_SECRET = os.environ.get('DJANGO_ADMIN_SECRET')
+
 if not ADMIN_SECRET:
-    # Try to load from file or generate new
-    secret_file = os.path.join(settings.BASE_DIR, '.admin_secret')
-    try:
-        with open(secret_file, 'r') as f:
-            ADMIN_SECRET = f.read().strip()
-            print(f"✅ Loaded admin secret from file: {secret_file}")
-    except FileNotFoundError:
-        ADMIN_SECRET = secrets.token_urlsafe(24)
-        with open(secret_file, 'w') as f:
-            f.write(ADMIN_SECRET)
-        print(f"📝 Generated new admin secret and saved to: {secret_file}")
-        print(f"🔐 IMPORTANT: Save this file securely!")
+    raise Exception(
+        "🚨 DJANGO_ADMIN_SECRET environment variable not set! "
+        "Set it in Vercel dashboard under Project Settings → Environment Variables."
+    )
+
 
 ADMIN_SECRET_PATH = f"manage-{ADMIN_SECRET}/"
 
