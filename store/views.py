@@ -4,7 +4,7 @@ from django.db.models import Q, Avg, Count
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib import messages
 from django.db import transaction, IntegrityError
 from .models import Category, Product, Testimonial, UserProfile
@@ -26,6 +26,18 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def redirect_to_admin(request):
+    """Redirect staff users to the secret admin URL"""
+    try:
+        secret_file = os.path.join(settings.BASE_DIR, '.admin_secret')
+        with open(secret_file, 'r') as f:
+            admin_secret = f.read().strip()
+            admin_url = f"/manage-{admin_secret}/"
+            return redirect(admin_url)
+    except FileNotFoundError:
+        return redirect('/admin/')
 def get_firebase_context():
     """Return Firebase configuration for templates"""
     return {

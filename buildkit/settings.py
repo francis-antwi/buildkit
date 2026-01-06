@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings - READ FROM .ENV FILE
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)  # Read from .env
-
+ADMIN_SECRET_FILE = BASE_DIR / '.admin_secret'
 # Handle ALLOWED_HOSTS configuration
 allowed_hosts_str = config('ALLOWED_HOSTS', default='localhost,127.0.0.1')
 # Clean the string and convert to list

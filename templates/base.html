@@ -1123,11 +1123,11 @@
     
     {% if user.is_authenticated %}
         <!-- Add admin button for staff users -->
-        {% if user.is_staff %}
-            <a href="{% url 'admin:index' %}" class="btn-admin" aria-label="Admin Panel" target="_blank">
-                <i class="fa fa-cog"></i> Admin
-            </a>
-        {% endif %}
+      {% if user.is_staff %}
+    <a href="{% url 'store:admin_redirect' %}" class="btn-admin" aria-label="Admin Panel" target="_blank">
+        <i class="fa fa-cog"></i> Admin
+    </a>
+{% endif %}
         <a href="{% url 'store:logout' %}" class="btn-login" aria-label="Logout">Logout</a>
     {% else %}
         <a href="{% url 'store:login' %}" class="btn-login" aria-label="Login">Login</a>

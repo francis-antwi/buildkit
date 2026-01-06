@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
     path('products/<int:product_id>/review/', views.add_review, name='add_review'),
+    path('admin-redirect/', views.redirect_to_admin, name='admin_redirect'),
     
     # Firebase OTP endpoints
     path('resend-verification/', views.resend_verification, name='resend_verification'),
