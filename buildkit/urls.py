@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import path, include
@@ -6,7 +5,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 import secrets
 import os
-from django.urls import include
+import time
+
 # ============================================
 # ADMIN SECURITY CONFIGURATION
 # ============================================
@@ -14,13 +14,11 @@ from django.urls import include
 # Generate or get the admin secret from environment
 ADMIN_SECRET = os.environ.get('DJANGO_ADMIN_SECRET')
 
-
 if not ADMIN_SECRET:
     raise Exception(
         "🚨 DJANGO_ADMIN_SECRET environment variable not set! "
         "Set it in Vercel dashboard under Project Settings → Environment Variables."
     )
-
 
 ADMIN_SECRET_PATH = f"manage-{ADMIN_SECRET}/"
 
@@ -271,91 +269,59 @@ def admin_access_denied(request, extra_path=''):
         """,
         content_type="text/html"
     )
+
 def custom_admin_wrapper(request, extra_path=''):
-    """Wrapper for admin site that adds logging and additional checks"""
-    # Log admin access attempt
-    user_ip = request.META.get('REMOTE_ADDR', '')
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    
-    print(f"\n🔐 ADMIN ACCESS ATTEMPT:")
-    print(f"   Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"   IP: {user_ip}")
-    print(f"   User: {request.user if request.user.is_authenticated else 'Anonymous'}")
-    print(f"   Path: {request.path}")
-    print(f"   Agent: {user_agent[:100]}...")
-    
-    # Check if user is authenticated and is staff
+    """Simple permission check then redirect to real admin"""
+    # Check permissions
     if not request.user.is_authenticated:
-        print("   ❌ Not authenticated - redirecting to login")
         from django.contrib.auth.views import redirect_to_login
         return redirect_to_login(request.get_full_path())
     
     if not request.user.is_staff:
-        print(f"   ❌ User '{request.user}' is not staff - denying access")
         return HttpResponseForbidden(
             "<h1>Access Denied</h1>"
-            "<p>You do not have permission to access the admin panel.</p>"
-            "<p>Your account does not have staff privileges.</p>"
+            "<p>Staff privileges required to access admin panel.</p>"
         )
     
-    print(f"   ✅ User '{request.user}' granted admin access")
+    # Log successful access
+    print(f"✅ Admin access granted to: {request.user}")
     
-    # FIX: Use ADMIN_SECRET_PATH variable instead of hardcoded string
-    # Remove the secret prefix from the path
-    secret_path = f"/manage-{ADMIN_SECRET}/"
-    path_to_resolve = request.path_info
-    
-    # Check if the path starts with our secret path
-    if path_to_resolve.startswith(secret_path):
-        path_to_resolve = path_to_resolve[len(secret_path):]
-    
-    # Ensure path starts with /
-    if not path_to_resolve.startswith('/'):
-        path_to_resolve = '/' + path_to_resolve
-    
-    # For empty path, show admin index
-    if not path_to_resolve or path_to_resolve == '/':
-        return admin.site.index(request)
-    
-    # For other paths, let Django admin handle them
-    # We need to manually route to the appropriate admin view
-    from django.urls import resolve, Resolver404
+    # Redirect to the REAL Django admin (which is included in urlpatterns below)
     from django.shortcuts import redirect
     
-    try:
-        # Try to resolve the path in admin URLs
-        # admin.site.urls[0] contains the urlpatterns
-        admin_urlpatterns = admin.site.urls[0]
-        
-        # Create a simple resolver
-        for pattern in admin_urlpatterns:
-            # Check if this pattern matches
-            match = pattern.resolve(path_to_resolve)
-            if match:
-                # Found a match - call the view
-                return match.func(request, *match.args, **match.kwargs)
-        
-        # If no match found, try redirecting
-        print(f"   ⚠️  No direct match for path: {path_to_resolve}")
-        
-        # Try to redirect to the equivalent admin path
-        # Remove any leading slashes
-        clean_path = path_to_resolve.lstrip('/')
-        return redirect(f'/admin/{clean_path}')
-        
-    except Exception as e:
-        print(f"   ❌ Error resolving admin path: {e}")
-        # Fallback: redirect to admin index
-        return redirect('admin:index')
+    # Extract path after secret prefix
+    full_path = request.path_info
+    secret_prefix = f"/manage-{ADMIN_SECRET}/"
+    
+    if full_path.startswith(secret_prefix):
+        admin_subpath = full_path[len(secret_prefix):]
+        # Remove leading slash if present
+        if admin_subpath.startswith('/'):
+            admin_subpath = admin_subpath[1:]
+    else:
+        admin_subpath = ''
+    
+    # Build redirect URL to the REAL admin (not blocked one)
+    if admin_subpath:
+        redirect_url = f'/real-admin/{admin_subpath}'
+    else:
+        redirect_url = '/real-admin/'
+    
+    print(f"🔐 Redirecting to: {redirect_url}")
+    return redirect(redirect_url)
+
 # ============================================
 # URL PATTERNS
 # ============================================
 
-import time  # For timestamp in logging
-
 urlpatterns = [
-    # REAL ADMIN (Secret URL)
+    # REAL ADMIN (Secret URL) - this redirects after permission check
     path(ADMIN_SECRET_PATH, custom_admin_wrapper),
+    path(ADMIN_SECRET_PATH + '<path:extra_path>/', custom_admin_wrapper),
+    
+    # ACTUAL Django admin (hidden at /real-admin/)
+    # This is where the admin actually lives
+    path('real-admin/', admin.site.urls),
     
     # MAIN APP ROUTES
     path('', include('store.urls')),
@@ -390,13 +356,13 @@ urlpatterns = [
     path('admin.php/', admin_access_denied),
     path('admin.php/<path:extra_path>/', admin_access_denied),
     
-    path('cp/', admin_access_denied),  # Control Panel
+    path('cp/', admin_access_denied),
     path('cp/<path:extra_path>/', admin_access_denied),
     
-    path('cpanel/', admin_access_denied),  # cPanel
+    path('cpanel/', admin_access_denied),
     path('cpanel/<path:extra_path>/', admin_access_denied),
     
-    path('administracion/', admin_access_denied),  # Spanish
+    path('administracion/', admin_access_denied),
     path('administracion/<path:extra_path>/', admin_access_denied),
     
     path('adminarea/', admin_access_denied),
@@ -408,7 +374,6 @@ urlpatterns = [
     path('moderator/', admin_access_denied),
     path('moderator/<path:extra_path>/', admin_access_denied),
     
-    # API/admin paths that should be blocked
     path('api/admin/', admin_access_denied),
     path('api/admin/<path:extra_path>/', admin_access_denied),
     
@@ -419,50 +384,7 @@ urlpatterns = [
 # Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
-    # Also serve the secret admin URL info in debug mode
-    def admin_info(request):
-        """Debug page showing admin info (only in DEBUG mode)"""
-        if not settings.DEBUG:
-            return admin_access_denied(request)
-        
-        from django.contrib.auth.decorators import login_required, user_passes_test
-        
-        @login_required
-        @user_passes_test(lambda u: u.is_staff)
-        def secured_info(request):
-            return HttpResponse(
-                f"""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Admin Security Info</title>
-                    <style>
-                        body {{ font-family: monospace; padding: 20px; }}
-                        .info {{ background: #f0f0f0; padding: 20px; border-radius: 5px; margin: 20px 0; }}
-                        .secret {{ background: #ffeb3b; padding: 10px; font-weight: bold; }}
-                        .warning {{ color: red; }}
-                    </style>
-                </head>
-                <body>
-                    <h1>Admin Security Configuration</h1>
-                    <div class="info">
-                        <h3>Current Configuration:</h3>
-                        <p><strong>Real Admin URL:</strong> <span class="secret">/{ADMIN_SECRET_PATH}</span></p>
-                        <p><strong>Secret File:</strong> {os.path.join(settings.BASE_DIR, '.admin_secret')}</p>
-                        <p><strong>Blocked Paths:</strong> /admin/, /administrator/, /wp-admin/, etc.</p>
-                    </div>
-                    <div class="warning">
-                        <h3>⚠️ Warning:</h3>
-                        <p>This page is only visible in DEBUG mode to staff users.</p>
-                        <p>Make sure to disable DEBUG in production!</p>
-                    </div>
-                    <a href="/{ADMIN_SECRET_PATH}">Go to Admin Panel →</a>
-                </body>
-                </html>
-                """
-            )
-        
-        return secured_info(request)
-    
-    urlpatterns.append(path('admin-info/', admin_info))
+
+# Log the real admin URL
+print(f"🔑 Real admin is at: /real-admin/")
+print(f"🔐 Secret gateway: /{ADMIN_SECRET_PATH}")
