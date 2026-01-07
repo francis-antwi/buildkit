@@ -300,31 +300,53 @@ def custom_admin_wrapper(request, extra_path=''):
     
     print(f"   ✅ User '{request.user}' granted admin access")
     
-    # FIXED: Proper way to handle admin URLs
-    # admin.site.urls returns (urlpatterns, app_name, namespace)
-    # We need to extract just the urlpatterns
-    admin_urlpatterns = admin.site.urls[0]
+    # FIX: Use ADMIN_SECRET_PATH variable instead of hardcoded string
+    # Remove the secret prefix from the path
+    secret_path = f"/manage-{ADMIN_SECRET}/"
+    path_to_resolve = request.path_info
     
-    # Use Django's URL resolver
-    from django.urls import URLResolver, get_resolver
-    from django.urls.resolvers import RegexPattern
+    # Check if the path starts with our secret path
+    if path_to_resolve.startswith(secret_path):
+        path_to_resolve = path_to_resolve[len(secret_path):]
     
-    # Create a resolver for admin URLs
-    resolver = get_resolver(admin_urlpatterns)
+    # Ensure path starts with /
+    if not path_to_resolve.startswith('/'):
+        path_to_resolve = '/' + path_to_resolve
     
-    # Resolve the path (remove the secret prefix)
-    path_to_resolve = request.path_info.replace(f'/manage-supersecret123/', '', 1)
-    if not path_to_resolve:
-        path_to_resolve = '/'
+    # For empty path, show admin index
+    if not path_to_resolve or path_to_resolve == '/':
+        return admin.site.index(request)
+    
+    # For other paths, let Django admin handle them
+    # We need to manually route to the appropriate admin view
+    from django.urls import resolve, Resolver404
+    from django.shortcuts import redirect
     
     try:
-        # Try to resolve and call the view
-        match = resolver.resolve(path_to_resolve)
-        return match.func(request, *match.args, **match.kwargs)
+        # Try to resolve the path in admin URLs
+        # admin.site.urls[0] contains the urlpatterns
+        admin_urlpatterns = admin.site.urls[0]
+        
+        # Create a simple resolver
+        for pattern in admin_urlpatterns:
+            # Check if this pattern matches
+            match = pattern.resolve(path_to_resolve)
+            if match:
+                # Found a match - call the view
+                return match.func(request, *match.args, **match.kwargs)
+        
+        # If no match found, try redirecting
+        print(f"   ⚠️  No direct match for path: {path_to_resolve}")
+        
+        # Try to redirect to the equivalent admin path
+        # Remove any leading slashes
+        clean_path = path_to_resolve.lstrip('/')
+        return redirect(f'/admin/{clean_path}')
+        
     except Exception as e:
-        # If resolution fails, show admin index
-        print(f"   ⚠️  Could not resolve path: {e}")
-        return admin.site.index(request)
+        print(f"   ❌ Error resolving admin path: {e}")
+        # Fallback: redirect to admin index
+        return redirect('admin:index')
 # ============================================
 # URL PATTERNS
 # ============================================
