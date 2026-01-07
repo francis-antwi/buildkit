@@ -1117,17 +1117,22 @@
                             <a class="nav-link" href="{% url 'store:index' %}#contact">Contact</a>
                         </li>
                     </ul>
-                    <div class="ms-3 custom-buttons">
+               <div class="ms-3 custom-buttons">
     <a href="{% url 'store:product_list' %}" class="btn-quote">Buy now</a>
     <button class="btn-search" aria-label="Search"><i class="fa fa-search"></i></button>
     
-    {% if user.is_authenticated and user.is_staff %}
-    <a href="{% url 'store:admin_redirect' %}" class="btn-admin" aria-label="Admin Panel" target="_blank">
-        <i class="fa fa-cog"></i> Admin
-    </a>
-{% endif %}
+    {% if user.is_authenticated %}
+        <!-- Admin button for staff users -->
+        {% if user.is_staff %}
+            <a href="{% url 'store:admin_redirect' %}" class="btn-admin" aria-label="Admin Panel" target="_blank">
+                <i class="fa fa-cog"></i> Admin
+            </a>
+        {% endif %}
+        
+        <!-- Logout button for authenticated users -->
         <a href="{% url 'store:logout' %}" class="btn-login" aria-label="Logout">Logout</a>
     {% else %}
+        <!-- Login/Register for non-authenticated users -->
         <a href="{% url 'store:login' %}" class="btn-login" aria-label="Login">Login</a>
         <a href="{% url 'store:register' %}" class="btn-login" aria-label="Register">Register</a>
     {% endif %}
@@ -1141,8 +1146,8 @@
         </span>
     </button>
 </div>
-                </div>
-            </nav>
+                                    </div>
+            </nav>  
         </div>
     </header>
     
