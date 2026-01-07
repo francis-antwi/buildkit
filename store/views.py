@@ -30,14 +30,26 @@ logger = logging.getLogger(__name__)
 @user_passes_test(lambda u: u.is_staff)
 def redirect_to_admin(request):
     """Redirect staff users to the secret admin URL"""
-    try:
-        secret_file = os.path.join(settings.BASE_DIR, '.admin_secret')
-        with open(secret_file, 'r') as f:
-            admin_secret = f.read().strip()
-            admin_url = f"/manage-{admin_secret}/"
-            return redirect(admin_url)
-    except FileNotFoundError:
-        return redirect('/admin/')
+    # FIRST: Check environment variable (for Vercel deployment)
+    admin_secret = os.environ.get('DJANGO_ADMIN_SECRET')
+    
+    # SECOND: If not in env, check file (for local development)
+    if not admin_secret:
+        try:
+            secret_file = os.path.join(settings.BASE_DIR, '.admin_secret')
+            with open(secret_file, 'r') as f:
+                admin_secret = f.read().strip()
+        except FileNotFoundError:
+            # If neither exists, show helpful error
+            return HttpResponse(
+                "Admin secret not found. "
+                "Set DJANGO_ADMIN_SECRET environment variable or create .admin_secret file.",
+                status=500
+            )
+    
+    # Build and redirect to admin URL
+    admin_url = f"/manage-{admin_secret}/"
+    return redirect(admin_url)
 def get_firebase_context():
     """Return Firebase configuration for templates"""
     return {

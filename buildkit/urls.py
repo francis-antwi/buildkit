@@ -13,7 +13,7 @@ import os
 
 # Generate or get the admin secret from environment
 ADMIN_SECRET = os.environ.get('DJANGO_ADMIN_SECRET')
-ADMIN_SECRET = os.environ.get('DJANGO_ADMIN_SECRET')
+
 
 if not ADMIN_SECRET:
     raise Exception(
