@@ -271,7 +271,6 @@ def admin_access_denied(request, extra_path=''):
         """,
         content_type="text/html"
     )
-
 def custom_admin_wrapper(request, extra_path=''):
     """Wrapper for admin site that adds logging and additional checks"""
     # Log admin access attempt
@@ -288,7 +287,6 @@ def custom_admin_wrapper(request, extra_path=''):
     # Check if user is authenticated and is staff
     if not request.user.is_authenticated:
         print("   ❌ Not authenticated - redirecting to login")
-        # Let Django handle the login redirect
         from django.contrib.auth.views import redirect_to_login
         return redirect_to_login(request.get_full_path())
     
@@ -302,14 +300,31 @@ def custom_admin_wrapper(request, extra_path=''):
     
     print(f"   ✅ User '{request.user}' granted admin access")
     
-    # Optional: Add IP whitelisting here if needed
-    # allowed_ips = ['127.0.0.1', '192.168.1.0/24']
-    # if not any(user_ip.startswith(ip.split('/')[0]) for ip in allowed_ips):
-    #     return admin_access_denied(request)
+    # FIXED: Proper way to handle admin URLs
+    # admin.site.urls returns (urlpatterns, app_name, namespace)
+    # We need to extract just the urlpatterns
+    admin_urlpatterns = admin.site.urls[0]
     
-    # Pass to default admin
-    return include(admin.site.urls)[0](request, extra_path)
-
+    # Use Django's URL resolver
+    from django.urls import URLResolver, get_resolver
+    from django.urls.resolvers import RegexPattern
+    
+    # Create a resolver for admin URLs
+    resolver = get_resolver(admin_urlpatterns)
+    
+    # Resolve the path (remove the secret prefix)
+    path_to_resolve = request.path_info.replace(f'/manage-supersecret123/', '', 1)
+    if not path_to_resolve:
+        path_to_resolve = '/'
+    
+    try:
+        # Try to resolve and call the view
+        match = resolver.resolve(path_to_resolve)
+        return match.func(request, *match.args, **match.kwargs)
+    except Exception as e:
+        # If resolution fails, show admin index
+        print(f"   ⚠️  Could not resolve path: {e}")
+        return admin.site.index(request)
 # ============================================
 # URL PATTERNS
 # ============================================
