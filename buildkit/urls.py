@@ -1,4 +1,4 @@
-# construction_store/urls.py (PROJECT LEVEL)
+
 from django.contrib import admin
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import path, include
@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 import secrets
 import os
-
+from django.urls import include
 # ============================================
 # ADMIN SECURITY CONFIGURATION
 # ============================================
@@ -308,7 +308,7 @@ def custom_admin_wrapper(request, extra_path=''):
     #     return admin_access_denied(request)
     
     # Pass to default admin
-    return admin.site.urls(request, extra_path)
+    return include(admin.site.urls)[0](request, extra_path)
 
 # ============================================
 # URL PATTERNS
