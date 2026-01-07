@@ -30,25 +30,59 @@ logger = logging.getLogger(__name__)
 @user_passes_test(lambda u: u.is_staff)
 def redirect_to_admin(request):
     """Redirect staff users to the secret admin URL"""
-    # FIRST: Check environment variable (for Vercel deployment)
+    # Log access attempt
+    logger.info(f"Admin redirect attempt by user: {request.user.username}")
+    
+    # Method 1: Check environment variable
     admin_secret = os.environ.get('DJANGO_ADMIN_SECRET')
+    source = "environment"
     
-    # SECOND: If not in env, check file (for local development)
+    # Method 2: Check file if env not found
     if not admin_secret:
-        try:
-            secret_file = os.path.join(settings.BASE_DIR, '.admin_secret')
-            with open(secret_file, 'r') as f:
-                admin_secret = f.read().strip()
-        except FileNotFoundError:
-            # If neither exists, show helpful error
-            return HttpResponse(
-                "Admin secret not found. "
-                "Set DJANGO_ADMIN_SECRET environment variable or create .admin_secret file.",
-                status=500
-            )
+        secret_file = os.path.join(settings.BASE_DIR, '.admin_secret')
+        logger.info(f"Checking for secret file: {secret_file}")
+        
+        if os.path.exists(secret_file):
+            try:
+                with open(secret_file, 'r') as f:
+                    admin_secret = f.read().strip()
+                    source = "file"
+                    logger.info(f"Found secret in file: {secret_file}")
+            except Exception as e:
+                logger.error(f"Error reading secret file: {e}")
+                return HttpResponse(
+                    f"Error reading .admin_secret file: {str(e)}",
+                    status=500
+                )
+        else:
+            logger.warning(f"Secret file not found: {secret_file}")
     
-    # Build and redirect to admin URL
+    # If still no secret found
+    if not admin_secret:
+        error_msg = (
+            "Admin secret not configured. "
+            "Please set DJANGO_ADMIN_SECRET environment variable "
+            "or create .admin_secret file in project root."
+        )
+        logger.error(error_msg)
+        return HttpResponse(
+            f"""
+            <h1>Admin Configuration Required</h1>
+            <p>{error_msg}</p>
+            <p>To fix:</p>
+            <ol>
+                <li>Set environment variable: <code>export DJANGO_ADMIN_SECRET="your-secret"</code></li>
+                <li>Or create file: <code>echo "your-secret" > .admin_secret</code></li>
+            </ol>
+            <p><a href="/">Return to Homepage</a></p>
+            """,
+            status=500
+        )
+    
+    # Success - redirect to admin
     admin_url = f"/manage-{admin_secret}/"
+    logger.info(f"Redirecting to admin URL from {source}")
+    
     return redirect(admin_url)
 def get_firebase_context():
     """Return Firebase configuration for templates"""
